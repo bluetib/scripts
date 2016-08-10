@@ -117,63 +117,53 @@ class log2:
 			#print self.elog
 			#sys.exit()
 
-	def write_run(self,MESSAGE,LEVEL):
+	def write_run(self,MESSAGE,LEVEL=3):
 		if not MESSAGE:
 			return -1
 		if not LEVEL:
 			return -1
-		if ( vars.RER_LOG_LEVEL >= LEVEL ):
-			if (LEVEL == 1):
-				#print "Don't show log info 1"
-				print MESSAGE
-				time.sleep(0.1)
-			if (LEVEL == 2):
-				#print "Don't show log info 2"
-				NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				File_Object = open(self.rlog,'a+')
-				File_Object.write(NEW_MESSAGE)
-				File_Object.close()
-				time.sleep(0.1)
-			if (LEVEL == 3):
-				NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				File_Object = open(self.rlog,'a+')
-				File_Object.write(NEW_MESSAGE)
-				File_Object.close()
-				print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				time.sleep(0.1)
-		else:
-			if (vars.PRINT_SHOW == 1):
-				print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				time.sleep(0.1)
+		if (LEVEL == 1):
+			#print "Don't show log info 1"
+			print MESSAGE
+			time.sleep(0.1)
+		if (LEVEL == 2):
+			#print "Don't show log info 2"
+			NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			File_Object = open(self.rlog,'a+')
+			File_Object.write(NEW_MESSAGE)
+			File_Object.close()
+			time.sleep(0.1)
+		if (LEVEL == 3):
+			NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			File_Object = open(self.rlog,'a+')
+			File_Object.write(NEW_MESSAGE)
+			File_Object.close()
+			print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
 
-	def write_err(self,MESSAGE,LEVEL):
+	def write_err(self,MESSAGE,LEVEL=3):
 		if not MESSAGE:
 			return -1
 		if not LEVEL:
 			return -1
-		if ( vars.RER_LOG_LEVEL >= LEVEL ):
-			if (LEVEL == 1):
-				#print "Don't show log info 1"
-				print MESSAGE
-				time.sleep(0.1)
-			if (LEVEL == 2):
-				#print "Don't show log info 2"
-				NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				File_Object = open(self.elog,'a+')
-				File_Object.write(NEW_MESSAGE)
-				File_Object.close()
-				time.sleep(0.1)
-			if (LEVEL == 3):
-				NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				File_Object = open(self.elog,'a+')
-				File_Object.write(NEW_MESSAGE)
-				File_Object.close()
-				print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				time.sleep(0.1)
-		else:
-			if (vars.PRINT_SHOW == 1):
-				print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				time.sleep(0.1)
+		if (LEVEL == 1):
+			#print "Don't show log info 1"
+			print MESSAGE
+			time.sleep(0.1)
+		if (LEVEL == 2):
+			#print "Don't show log info 2"
+			NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			File_Object = open(self.elog,'a+')
+			File_Object.write(NEW_MESSAGE)
+			File_Object.close()
+			time.sleep(0.1)
+		if (LEVEL == 3):
+			NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			File_Object = open(self.elog,'a+')
+			File_Object.write(NEW_MESSAGE)
+			File_Object.close()
+			print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			time.sleep(0.1)
+
 class log:
 	def __init__(self,*logs):
 		'''
@@ -203,63 +193,53 @@ class log:
 			#print self.rlog
 			#sys.exit()
 
-	def write_run(self,MESSAGE,LEVEL):
+	def write_run(self,MESSAGE,LEVEL=3):
 		if not MESSAGE:
 			return -1
 		if not LEVEL:
 			return -1
-		if ( vars.RER_LOG_LEVEL >= LEVEL ):
-			if (LEVEL == 1):
-				#print "Don't show log info 1"
-				print MESSAGE
-				time.sleep(0.1)
-			if (LEVEL == 2):
-				#print "Don't show log info 2"
-				NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				File_Object = open(self.rlog,'a+')
-				File_Object.write(NEW_MESSAGE)
-				File_Object.close()
-				time.sleep(0.1)
-			if (LEVEL == 3):
-				NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				File_Object = open(self.rlog,'a+')
-				File_Object.write(NEW_MESSAGE)
-				File_Object.close()
-				print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				time.sleep(0.1)
-		else:
-			if (vars.PRINT_SHOW == 1):
-				print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				time.sleep(0.1)
+		if (LEVEL == 1):
+			#print "Don't show log info 1"
+			print MESSAGE
+			time.sleep(0.1)
+		if (LEVEL == 2):
+			#print "Don't show log info 2"
+			NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			File_Object = open(self.rlog,'a+')
+			File_Object.write(NEW_MESSAGE)
+			File_Object.close()
+			time.sleep(0.1)
+		if (LEVEL == 3):
+			NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			File_Object = open(self.rlog,'a+')
+			File_Object.write(NEW_MESSAGE)
+			File_Object.close()
+			print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			time.sleep(0.1)
 
-	def write_err(self,MESSAGE,LEVEL):
+	def write_err(self,MESSAGE,LEVEL=3):
 		if not MESSAGE:
 			return -1
 		if not LEVEL:
 			return -1
-		if ( vars.RER_LOG_LEVEL >= LEVEL ):
-			if (LEVEL == 1):
-				#print "Don't show log info 1"
-				print MESSAGE
-				time.sleep(0.1)
-			if (LEVEL == 2):
-				#print "Don't show log info 2"
-				NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				File_Object = open(self.elog,'a+')
-				File_Object.write(NEW_MESSAGE)
-				File_Object.close()
-				time.sleep(0.1)
-			if (LEVEL == 3):
-				NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				File_Object = open(self.elog,'a+')
-				File_Object.write(NEW_MESSAGE)
-				File_Object.close()
-				print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				time.sleep(0.1)
-		else:
-			if (vars.PRINT_SHOW == 1):
-				print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-				time.sleep(0.1)
+		if (LEVEL == 1):
+			#print "Don't show log info 1"
+			print MESSAGE
+			time.sleep(0.1)
+		if (LEVEL == 2):
+			#print "Don't show log info 2"
+			NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			File_Object = open(self.elog,'a+')
+			File_Object.write(NEW_MESSAGE)
+			File_Object.close()
+			time.sleep(0.1)
+		if (LEVEL == 3):
+			NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			File_Object = open(self.elog,'a+')
+			File_Object.write(NEW_MESSAGE)
+			File_Object.close()
+			print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
+			time.sleep(0.1)
 
 
 if __name__ == "__main__":
