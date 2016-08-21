@@ -61,7 +61,7 @@ def print_help():
 
   -d                    Decrypt
   -e                    Encrypt
-  
+
   --dir_as_one_file     will make a zip from the given dir and encrypt the whole zip file
 ''' % sys.argv[0])
     sys.exit()
@@ -173,7 +173,7 @@ def get_the_zip_path_for_dir(source_dir_path):
     os.chdir(os.path.split(source_dir_path)[0])
     dest_zip_file_path = "%s%s%s.zip" % (os.path.split(source_dir_path)[0],os.sep,os.path.split(source_dir_path)[1])
     zipf = zipfile.ZipFile("%s" % dest_zip_file_path,"w")
-    for root, dirs, files in os.walk(os.path.split(source_dir_path)[1]):                
+    for root, dirs, files in os.walk(os.path.split(source_dir_path)[1]):
         for file in files:
 #             print(os.path.join(root,file))
 #             time.sleep(1)
@@ -288,10 +288,10 @@ def get_config():
     if os.path.isfile(the_deal_path) != True and os.path.isdir(the_deal_path) != True:
         print("Sorry.. You must give me a path to a file or dir! EXIT now")
         sys.exit()
-    
+
     if len(sys.argv) == 4 and str(sys.argv[3]) == "--dir_as_one_file":
         dir_as_one_file = True
-        
+
 
 def load_libsodium():
     global loaded, libsodium, buf
@@ -462,7 +462,7 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
         self.method = method
         self.choice = choice
         self.response_dic['%s' % self.id] = {}
-        
+
     def run(self):
         i = self.queue.get()
         begin_time = time.time()
@@ -471,12 +471,12 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
                 cipher_obj = TableCipher(self.method,self.key,random_string(method_supported[self.method][1]),1)
                 encrypt_or_decrypt(cipher_obj,"%s" % i,1)
                 self.response_dic['%s' % self.id]['before'] = "%s" % i
-                self.response_dic['%s' % self.id]['after'] = "%s.locked" % i                
+                self.response_dic['%s' % self.id]['after'] = "%s.locked" % i
             elif self.choice == "decrypt":
                 cipher_obj = TableCipher(self.method,self.key,random_string(method_supported[self.method][1]),0)
                 encrypt_or_decrypt(cipher_obj,"%s" % i,0)
                 self.response_dic['%s' % self.id]['before'] = "%s" % i
-                self.response_dic['%s' % self.id]['after'] = "%s" % i.replace(".locked","")                         
+                self.response_dic['%s' % self.id]['after'] = "%s" % i.replace(".locked","")
             else:
                 print("Sorry 1")
                 sys.exit()
@@ -485,15 +485,15 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
                 cipher_obj = SodiumCrypto(self.method,self.key,random_string(method_supported[self.method][1]),1)
                 encrypt_or_decrypt(cipher_obj,"%s" % i,1)
                 self.response_dic['%s' % self.id]['before'] = "%s" % i
-                self.response_dic['%s' % self.id]['after'] = "%s.locked" % i                
+                self.response_dic['%s' % self.id]['after'] = "%s.locked" % i
             elif self.choice == "decrypt":
                 cipher_obj = SodiumCrypto(self.method,self.key,random_string(method_supported[self.method][1]),0)
                 encrypt_or_decrypt(cipher_obj,"%s" % i,0)
                 self.response_dic['%s' % self.id]['before'] = "%s" % i
-                self.response_dic['%s' % self.id]['after'] = "%s" % i.replace(".locked","")                         
+                self.response_dic['%s' % self.id]['after'] = "%s" % i.replace(".locked","")
             else:
                 print("Sorry 2")
-                sys.exit()            
+                sys.exit()
         else:
             cipher_obj = Encryptor(self.key,self.method)
             if self.choice == "encrypt":
@@ -520,7 +520,7 @@ class do_encrypt_or_decrypt_win(threading.Thread):
         self.method = method
         self.choice = choice
         self.response_dic['%s' % self.id] = {}
-        
+
     def run(self):
         i = self.queue.get()
         begin_time = time.time()
@@ -529,7 +529,7 @@ class do_encrypt_or_decrypt_win(threading.Thread):
                 cipher_obj = TableCipher(self.method,self.key,random_string(method_supported[self.method][1]),1)
                 encrypt_or_decrypt(cipher_obj,"%s" % i,1)
                 self.response_dic['%s' % self.id]['before'] = "%s" % i.decode("GB2312").encode("utf-8")
-                self.response_dic['%s' % self.id]['after'] = "%s.locked" % i.decode("GB2312").encode("utf-8")                
+                self.response_dic['%s' % self.id]['after'] = "%s.locked" % i.decode("GB2312").encode("utf-8")
             elif self.choice == "decrypt":
                 cipher_obj = TableCipher(self.method,self.key,random_string(method_supported[self.method][1]),0)
                 encrypt_or_decrypt(cipher_obj,"%s" % i,0)
@@ -551,7 +551,7 @@ class do_encrypt_or_decrypt_win(threading.Thread):
                 self.response_dic['%s' % self.id]['after'] = "%s" % i.replace(".locked","").decode("GB2312").encode("utf-8")
             else:
                 print("Sorry 2")
-                sys.exit()            
+                sys.exit()
         else:
             cipher_obj = Encryptor(self.key,self.method)
             if self.choice == "encrypt":
@@ -646,7 +646,7 @@ def test_chacha20():
     run_cipher(cipher, decipher)
 
 
-if __name__ == '__main__':    
+if __name__ == '__main__':
     if len(sys.argv) not in [3,4]:
         print_help()
 
@@ -663,10 +663,10 @@ if __name__ == '__main__':
         if dir_as_one_file:
             the_deal_path = get_the_zip_path_for_dir(the_deal_path)
         if method in ["salsa20","chacha20"] and not loaded:
-            load_libsodium()        
+            load_libsodium()
         elif method not in ['table'] and not loaded:
             load_openssl()
-        if os.path.isdir(the_deal_path):            
+        if os.path.isdir(the_deal_path):
             os.chdir(the_deal_path)
             if choice == "encrypt":
                 all_encrypt_files = [f for f in glob.glob("*") if "locked" not in f and os.path.isfile(f)]
@@ -677,7 +677,7 @@ if __name__ == '__main__':
                         t = do_encrypt_or_decrypt_linux(my_queue,result_dic,i,key,method,choice)
                     t.setDaemon(True)
                     t.start()
-                result_dic['direction'] = 'encrypt'            
+                result_dic['direction'] = 'encrypt'
                 for one_file in all_encrypt_files:
                     my_queue.put(one_file)
             elif choice == "decrypt":
@@ -689,7 +689,7 @@ if __name__ == '__main__':
                         t = do_encrypt_or_decrypt_linux(my_queue,result_dic,i,key,method,choice)
                     t.setDaemon(True)
                     t.start()
-                result_dic['direction'] = 'decrypt'       
+                result_dic['direction'] = 'decrypt'
                 for one_file in all_decrypt_files:
                     my_queue.put(one_file)
             my_queue.join()
@@ -697,16 +697,16 @@ if __name__ == '__main__':
             thread_num = 1
             if choice == "encrypt":
                 if "locked" in the_deal_path:
-                    raise Exception("The file has been locked.. %s" % the_deal_path)                
+                    raise Exception("The file has been locked.. %s" % the_deal_path)
                 for i in range(thread_num):
                     if os.name == 'nt':
                         t = do_encrypt_or_decrypt_win(my_queue,result_dic,i,key,method,choice)
                     elif os.name == "posix":
                         t = do_encrypt_or_decrypt_linux(my_queue,result_dic,i,key,method,choice)
                     t.setDaemon(True)
-                    t.start()    
+                    t.start()
                 result_dic['direction'] = 'encrypt'
-                my_queue.put(the_deal_path)       
+                my_queue.put(the_deal_path)
             elif choice == "decrypt":
                 for i in range(thread_num):
                     if os.name == 'nt':
@@ -719,8 +719,7 @@ if __name__ == '__main__':
                 my_queue.put(the_deal_path)
             my_queue.join()
         print_json(result_dic)
-        open("%s%sEncrypt_or_Decrypt_my_data.log" % (os.path.split(os.path.abspath(__file__))[0],os.sep),'a+').write("%s\n-------------------------%s-----------------------\n\n"\
-                                                           % (json.dumps(result_dic,indent=4,ensure_ascii=False,sort_keys=True),time.strftime("%Y-%m-%d %H:%M:%S")))
+        open("%s%sEncrypt_or_Decrypt_my_data.log" % (os.path.split(os.path.abspath(__file__))[0],os.sep),'a+').write("%s\n-------------------------%s-----------------------\n\n" % (json.dumps(result_dic,indent=4,ensure_ascii=False,sort_keys=True),time.strftime("%Y-%m-%d %H:%M:%S")))
     except Exception as e:
         print("ERROR INFO: %s" % str(e))
         sys.exit()
