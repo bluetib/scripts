@@ -586,6 +586,9 @@ def print_json_with_sort_all_num_keys(data,indent_=4):
 	print json.dumps(tmp_dic,indent=indent_,ensure_ascii=False,sort_keys=True)
 	print "-" * 60
 
+def cd_into_cwd_dir(running_script):
+	os.chdir(os.path.split(os.path.realpath(running_script))[0])
+
 #################################################################################
 
 
