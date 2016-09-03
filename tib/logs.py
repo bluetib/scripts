@@ -6,7 +6,7 @@
 try:
 	import time,os,sys
 	import global_vars as vars
-	import funcs as my_funcs
+	import funcs as my_func
 except ImportError,e:
 	print "Hi,boss..I catch a exception:",e
 	print "And we exit now"
