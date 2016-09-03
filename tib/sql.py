@@ -8,7 +8,7 @@
 try:
 	import time
 	import sys
-	import functions as funs
+	import funcs as funcs
 	import MySQLdb,sys,os,time
 	import global_vars as vars
 except ImportError,e:
