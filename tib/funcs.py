@@ -603,6 +603,18 @@ def multikeysort(dic, columns):
 		)
 		return next((result for result in comparer_iter if result), 0)
 	return sorted(dic.items, cmp=comparer)
+
+def sort_dic_by_key_or_value(ori_dic,sort_by="key"):
+	try:
+		import operator
+		ori_dic
+		if sort_by == "key":
+			sorted_x = sorted(ori_dic.items(), key=operator.itemgetter(0))
+		else:
+			sorted_x = sorted(ori_dic.items(), key=operator.itemgetter(1))
+		return sorted_x
+	except:
+		return ori_dic
 #################################################################################
 
 
@@ -614,3 +626,6 @@ if __name__ == '__main__':
 	print str_1
 	print a
 	print b
+	#x = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}
+	#for i in sort_dic_by_key_or_value(x,sort_by="value"):
+	#	print i
