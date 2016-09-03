@@ -19,6 +19,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from os.path import join, getsize
+from operator import itemgetter as i
 
 import socket
 socket.setdefaulttimeout(15)
@@ -589,6 +590,19 @@ def print_json_with_sort_all_num_keys(data,indent_=4):
 def cd_into_cwd_dir(running_script):
 	os.chdir(os.path.split(os.path.realpath(running_script))[0])
 
+
+def multikeysort(dic, columns):
+	comparers = [
+		((i(col[1:].strip()), -1) if col.startswith('-') else (i(col.strip()), 1))
+		for col in columns
+	]
+	def comparer(left, right):
+		comparer_iter = (
+			cmp(fn(left), fn(right)) * mult
+			for fn, mult in comparers
+		)
+		return next((result for result in comparer_iter if result), 0)
+	return sorted(dic.items, cmp=comparer)
 #################################################################################
 
 
