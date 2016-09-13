@@ -605,7 +605,7 @@ def multikeysort(dic, columns):
 		return next((result for result in comparer_iter if result), 0)
 	return sorted(dic.items, cmp=comparer)
 
-def sort_dic_by_key_or_value(ori_dic,sort_by="key"):
+def sort_dic_by_key_or_value_only_one_key_and_one_value(ori_dic,sort_by="key"):
 	try:
 		import operator
 		ori_dic
