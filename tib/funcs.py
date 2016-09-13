@@ -20,6 +20,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from os.path import join, getsize
 from operator import itemgetter as i
+from collections import OrderedDict
 
 import socket
 socket.setdefaulttimeout(15)
@@ -615,6 +616,13 @@ def sort_dic_by_key_or_value(ori_dic,sort_by="key"):
 		return sorted_x
 	except:
 		return ori_dic
+
+def sort_dict_by_the_value_keystring(ori_dic,value_key):
+	try:
+		sorted_by_value_key = OrderedDict(sorted(ori_dic.items(), key=lambda kv: kv[1]["%s" % str(value_key).strip()],reverse=True))
+		return sorted_by_value_key
+	except:
+		return ori_dic
 #################################################################################
 
 
@@ -626,6 +634,7 @@ if __name__ == '__main__':
 	print str_1
 	print a
 	print b
-	#x = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}
-	#for i in sort_dic_by_key_or_value(x,sort_by="value"):
-	#	print i
+	x = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}
+	#print sort_dic_by_key_or_value(x,sort_by="value")
+	for i in sort_dic_by_key_or_value(x,sort_by="value"):
+		print i
