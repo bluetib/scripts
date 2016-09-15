@@ -18,11 +18,11 @@ except ImportError,e:
 class mysql:
 
 	def __init__(self):
-		self.host = vars.RER_DB_HOST
-		self.port = vars.RER_DB_PORT
-		self.user = vars.RER_DB_USER
-		self.password = vars.RER_DB_PASSWORD
-		self.db = vars.RER_DB_NAME
+		self.host = ""
+		self.port = ""
+		self.user = ""
+		self.password = ""
+		self.db = ""
 		self.this_conn = None
 		self.this_cursor = None
 		self.charset = "utf8"
