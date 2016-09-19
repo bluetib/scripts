@@ -1,0 +1,20 @@
+# Define History
+HISTFILESIZE=10000000
+HISTSIZE=10000
+export PROMPT_COMMAND="history -a"
+HISTORY_DIR="/root/history_long"
+export HISTFILE="${HISTORY_DIR}/${LOGNAME}_history"
+export HISTTIMEFORMAT="[%Y-%m-%d %H:%M:%S] "
+USER_IP="$(who -u am i 2>/dev/null | awk '{print $NF}' | sed -e 's/[()]//g')"
+
+if [ -z "${USER_IP}" ];
+		then
+		USER_IP="$(hostname)"
+fi
+if [ ! -d "${HISTORY_DIR}" ]
+	then
+	mkdir -p "${HISTORY_DIR}"
+	chmod 777 "${HISTORY_DIR}"
+fi
+
+chmod 600 "${HISTFILE}" 2>/dev/null
