@@ -623,6 +623,15 @@ def sort_dict_by_the_value_keystring(ori_dic,value_key):
 		return sorted_by_value_key
 	except:
 		return ori_dic
+
+def timestamp_to_time(the_timestamp):
+	time = datetime.datetime.fromtimestamp(int("%s" % the_timestamp)).strftime('%Y-%m-%d %H:%M:%S')
+	return str(time)
+
+def time_to_timestamp(the_time):
+	timestamp = time.mktime(datetime.datetime.strptime(the_time, '%Y-%m-%d %H:%M:%S').timetuple())
+	#time = datetime.datetime.fromtimestamp(int("%s" % the_timestamp)).strftime('%Y-%m-%d %H:%M:%S')
+	return int(timestamp)
 #################################################################################
 
 
@@ -636,5 +645,5 @@ if __name__ == '__main__':
 	print b
 	x = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}
 	#print sort_dic_by_key_or_value(x,sort_by="value")
-	for i in sort_dic_by_key_or_value(x,sort_by="value"):
-		print i
+	#for i in sort_dic_by_key_or_value(x,sort_by="value"):
+	#	print i
