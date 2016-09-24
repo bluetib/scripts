@@ -632,18 +632,39 @@ def time_to_timestamp(the_time):
 	timestamp = time.mktime(datetime.datetime.strptime(the_time, '%Y-%m-%d %H:%M:%S').timetuple())
 	#time = datetime.datetime.fromtimestamp(int("%s" % the_timestamp)).strftime('%Y-%m-%d %H:%M:%S')
 	return int(timestamp)
+
+def hasNumbers(inputString):
+	return any(char.isdigit() for char in inputString)
+
+def get_all_disk_of_this_machine():
+	ret = run_shell_command("ls -al /dev/disk/by-id/ata*|awk -F'/' '{print $NF}'|sort -V")
+	if ret[0] == 0:
+		only_disk = []
+		disk_with_part = []
+		for disk in ret[1].split('\n'):
+			if hasNumbers(disk):
+				disk_with_part.append(disk)
+			else:
+				only_disk.append(disk)
+		return (only_disk,disk_with_part)
+	else:
+		return ""
+
+
 #################################################################################
 
 
 if __name__ == '__main__':
 	#a = "2.3.4.5"
-	str_1 = "2#?3TvP?C;B2fjwfF@"
-	a = encrypt_str_2(str_1)
-	b = decrypt_str_2(a)
-	print str_1
-	print a
-	print b
-	x = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}
+	#str_1 = "2#?3TvP?C;B2fjwfF@"
+	#a = encrypt_str_2(str_1)
+	#b = decrypt_str_2(a)
+	#print str_1
+	#print a
+	#print b
+	#x = {1: 2, 3: 4, 4: 3, 2: 1, 0: 0}
 	#print sort_dic_by_key_or_value(x,sort_by="value")
 	#for i in sort_dic_by_key_or_value(x,sort_by="value"):
 	#	print i
+	print get_all_disk_of_this_machine()
+	#print run_shell_command("ls -al /tmp/")[1].split('\n')
