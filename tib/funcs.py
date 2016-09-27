@@ -633,6 +633,17 @@ def time_to_timestamp(the_time):
 	#time = datetime.datetime.fromtimestamp(int("%s" % the_timestamp)).strftime('%Y-%m-%d %H:%M:%S')
 	return int(timestamp)
 
+def write_to_file_with_tmp_file(last_file,content,is_list=False):
+	tmp_file = "%s.tmp" % last_file
+	with open(tmp_file) as f:
+		if is_list:
+			for i in content:
+				f.write("%s\n" % str(i).strip())
+		else:
+			f.write(content)
+			f.write("\n")
+	os.rename(tmp_file,last_file)
+
 def hasNumbers(inputString):
 	return any(char.isdigit() for char in inputString)
 
