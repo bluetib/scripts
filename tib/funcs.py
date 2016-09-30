@@ -661,6 +661,12 @@ def get_all_disk_of_this_machine():
 	else:
 		return ""
 
+def human(num, power="Ki"):
+    powers = ["Ki", "Mi", "Gi", "Ti"]
+    while num >= 1000: #4 digits
+        num /= 1024.0
+        power = powers[powers.index(power)+1]
+    return "%.1f %s" % (num, power)
 
 #################################################################################
 
