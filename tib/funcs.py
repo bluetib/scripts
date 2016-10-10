@@ -64,11 +64,13 @@ def json_loads_unicode_to_string(data):
 	return json.loads(data,object_hook=_decode_dict)
 
 def json_dumps_unicode_to_string(data):
-	if type(data) == "list":
+	if type(data) is list:
 		result = _decode_list(data)
-	elif type(data) == "dict":
+	elif type(data) is dict:
 		result = _decode_dict(data)
-	return json.dumps(data,indent=4,sort_keys=True,ensure_ascii=False)
+	else:
+		result = data
+	return json.dumps(result,indent=4,sort_keys=True,ensure_ascii=False)
 
 def get_file_size(file_path):
 	if os.path.exists(file_path) is not True:
@@ -683,5 +685,7 @@ if __name__ == '__main__':
 	#print sort_dic_by_key_or_value(x,sort_by="value")
 	#for i in sort_dic_by_key_or_value(x,sort_by="value"):
 	#	print i
-	print get_all_disk_of_this_machine()
+	#print get_all_disk_of_this_machine()
 	#print run_shell_command("ls -al /tmp/")[1].split('\n')
+	#print type(json_dumps_unicode_to_string({"你好":{"i111":"你好"}}))
+	print type({u"你好":{"i111":"你好"}}) is dict
