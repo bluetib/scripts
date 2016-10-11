@@ -88,9 +88,12 @@ def get_dir_size(dir):
 	return (size,"bytes")
 
 def mk_dir_if_not_exist(path):
+	uid = os.getuid()
+	gid = os.getgid()
 	dir_path = os.path.split(path)[0]
 	if os.path.exists(dir_path) is not True:
 		os.makedirs(dir_path)
+		os.chown(dir_path,uid,gid)
 
 def mk_dir(path):
 	dir_path = path
