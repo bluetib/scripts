@@ -548,7 +548,10 @@ def run_shell_command(command_string):
 	cmd = "%s" % command_string.strip()
 	p = Popen(cmd,shell=True,stdout=PIPE,stderr=PIPE)
 	out,err = p.communicate()
-	return (p.returncode,out.rstrip(),err.rstrip())
+	if p.returncode == 0:
+		return ("ok",out.rstrip(),err.rstrip())
+	else:
+		return ("problem",out.rstrip(),err.rstrip())
 
 def is_valid_ip(ip_string):
 	try:
@@ -689,6 +692,7 @@ if __name__ == '__main__':
 	#for i in sort_dic_by_key_or_value(x,sort_by="value"):
 	#	print i
 	#print get_all_disk_of_this_machine()
-	#print run_shell_command("ls -al /tmp/")[1].split('\n')
+	#print run_shell_command("ls -al /tmp/")
 	#print type(json_dumps_unicode_to_string({"你好":{"i111":"你好"}}))
-	print type({u"你好":{"i111":"你好"}}) is dict
+	#print type({u"你好":{"i111":"你好"}}) is dict
+	pass
