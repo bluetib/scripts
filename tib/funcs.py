@@ -677,11 +677,23 @@ def get_all_disk_of_this_machine():
 		return ""
 
 def human(num, power="Ki"):
-    powers = ["Ki", "Mi", "Gi", "Ti"]
-    while num >= 1000: #4 digits
-        num /= 1024.0
-        power = powers[powers.index(power)+1]
-    return "%.1f %s" % (num, power)
+	powers = ["Ki", "Mi", "Gi", "Ti"]
+	while num >= 1000: #4 digits
+		num /= 1024.0
+		power = powers[powers.index(power)+1]
+	return "%.1f %s" % (num, power)
+
+
+def atoi(text):
+	return int(text) if text.isdigit() else text
+
+def natural_keys(text):
+	'''
+	alist.sort(key=natural_keys) sorts in human order
+	http://nedbatchelder.com/blog/200712/human_sorting.html
+	(See Toothy's implementation in the comments)
+	'''
+	return [ atoi(c) for c in re.split('(\d+)', text) ]
 
 #################################################################################
 
