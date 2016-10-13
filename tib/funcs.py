@@ -548,6 +548,13 @@ def run_shell_command(command_string):
 	cmd = "%s" % command_string.strip()
 	p = Popen(cmd,shell=True,stdout=PIPE,stderr=PIPE)
 	out,err = p.communicate()
+	return (p.returncode,out.rstrip(),err.rstrip())
+
+def run_shell_command_2(command_string):
+	from subprocess import Popen,PIPE
+	cmd = "%s" % command_string.strip()
+	p = Popen(cmd,shell=True,stdout=PIPE,stderr=PIPE)
+	out,err = p.communicate()
 	if p.returncode == 0:
 		return ("ok",out.rstrip(),err.rstrip())
 	else:
@@ -692,7 +699,7 @@ if __name__ == '__main__':
 	#for i in sort_dic_by_key_or_value(x,sort_by="value"):
 	#	print i
 	#print get_all_disk_of_this_machine()
-	#print run_shell_command("ls -al /tmp/")
+	print run_shell_command_2("ls -al /dddtmp/")
 	#print type(json_dumps_unicode_to_string({"你好":{"i111":"你好"}}))
 	#print type({u"你好":{"i111":"你好"}}) is dict
 	pass
