@@ -9,7 +9,7 @@ do
 		continue
 	fi
 	echo -e "======================================= $i ========================================="
-	git pull
+	git pull 2>/dev/null
 	date2=$(date +%s)
 	time_used=$((date2-date1))
 	echo -e "===================================== Pull used time seconds: [$time_used] ===========================================\n"
