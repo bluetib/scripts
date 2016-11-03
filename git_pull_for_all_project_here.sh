@@ -19,7 +19,12 @@ do
 	fi
 	echo -e "======================================= $i ========================================="
 	if [ $branch_name != "" ];then
-		git checkout -b ${branch_name} origin/${branch_name}
+		N=$(git branch -a|egrep -v remote|egrep ${branch_name}|wc -l)
+		if [ $N -eq 1 ];then
+			git checkout $branch_name
+		else
+			git checkout -b ${branch_name} origin/${branch_name}
+		fi
 	fi
 	git pull 2>/dev/null
 	date2=$(date +%s)
