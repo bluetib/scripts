@@ -19,7 +19,7 @@ do
 	fi
 	echo -e "======================================= $i ========================================="
 	if [ $branch_name != "" ];then
-		git checkout $branch_name
+		git checkout -b ${branch_name} origin/${branch_name}
 	fi
 	git pull 2>/dev/null
 	date2=$(date +%s)
