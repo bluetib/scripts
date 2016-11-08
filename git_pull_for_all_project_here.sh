@@ -29,6 +29,8 @@ do
 	git pull 2>/dev/null
 	date2=$(date +%s)
 	time_used=$((date2-date1))
+	echo -e "|||| checkout to dev |||||"
+	git checkout dev
 	echo -e "===================================== Pull used time seconds: [$time_used] ===========================================\n"
 	cd ..
 done
