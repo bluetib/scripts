@@ -62,11 +62,17 @@ def get_data_from_url(url):
 	l1 = []
 	l2 = []
 	data = requests.get(url).content
+	#print data
+	#print data.split("&")
+	#time.sleep(1)
 	if len(data.split('&')) == 4:
 		data_1 = data.split('&')[0].split('],[')
 		data_2 = data.split('&')[1].split('],[')
 		#print data_1
 		#print data_2
+		#print len(data_1)
+		#print len(data_2)
+		#time.sleep(1)
 		for i in range(24):
 			if i == 0:
 				l1.append(data_1[i][2:].split(',')[1])
@@ -74,7 +80,7 @@ def get_data_from_url(url):
 				l1.append(data_1[i][:-2].split(',')[1])
 			else:
 				l1.append(data_1[i].split(',')[1])
-		for i in range(24):
+		for i in range(23):
 			if i == 0:
 				l2.append(data_2[i][2:].split(',')[1])
 			elif i == 23:
@@ -265,7 +271,11 @@ if __name__ == '__main__':
 		print from_chinese_to_utf8_str(i)
 		#time.sleep(1)
 		a = house_price_get_url % ("%s" % from_chinese_to_utf8_str(i))
+		print a
+		#time.sleep(1)
 		bb = get_data_from_url(a)
+		#print bb
+		#time.sleep(1)
 		if bb == ("",""):
 			print "Fuck Oh No."
 			sys.exit()

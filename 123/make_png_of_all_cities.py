@@ -21,6 +21,16 @@ mpl.rcParams['axes.unicode_minus'] = False
 # gender_degree_data = csv2rec(fname)
 
 aa = json.loads(open("/tmp/house_price_of_all_cities.txt").read())
+for k,v in aa.items():
+	print k
+	print v['new']
+	print v['second']
+	print len(v['new'])
+	print len(v['second'])
+	print "-" * 100
+#print aa.keys()
+#print aa.values()
+sys.exit()
 
 # These are the colors that will be used in the plot
 color_sequence = ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c',
