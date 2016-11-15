@@ -19,7 +19,7 @@ do
 	fi
 	echo -e "======================================= $i ========================================="
 	if [ "$branch_name" != "" ];then
-		N=$(git branch -a|egrep -v remote|egrep ${branch_name}|wc -l)
+		N=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep ${branch_name}|wc -l)
 		if [ $N -eq 1 ];then
 			git checkout $branch_name
 		else
