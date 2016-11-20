@@ -19,7 +19,7 @@ do
 	fi
 	echo -e "======================================= $i ========================================="
 	if [ "$branch_name" != "" ];then
-		N=$(git branch -a|egrep -v remote|egrep ${branch_name}|wc -l)
+		N=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep ${branch_name}|wc -l)
 		if [ $N -eq 1 ];then
 			git checkout $branch_name
 		else
@@ -29,6 +29,8 @@ do
 	git pull 2>/dev/null
 	date2=$(date +%s)
 	time_used=$((date2-date1))
+	echo -e "|||| checkout to dev |||||"
+	git checkout dev
 	echo -e "===================================== Pull used time seconds: [$time_used] ===========================================\n"
 	cd ..
 done
