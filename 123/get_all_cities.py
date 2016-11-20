@@ -10,7 +10,7 @@ import datetime
 import mimetypes
 import MySQLdb
 import urllib
-import functions as func
+from tib import funcs as func
 from tib import global_vars as vars
 import Queue
 import threading
