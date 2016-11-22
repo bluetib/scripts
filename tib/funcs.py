@@ -695,6 +695,15 @@ def natural_keys(text):
 	'''
 	return [ atoi(c) for c in re.split('(\d+)', text) ]
 
+def insert_into_list(ori_list,match_string,insert_data):
+	jk = ""
+	for i in range(len(ori_list)):
+		if str(ori_list[i]).startswith(str(match_string)):
+			jk = i
+			break
+	if jk != "":
+		ori_list.insert(jk,insert_data)
+	return ori_list
 #################################################################################
 
 
