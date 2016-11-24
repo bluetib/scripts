@@ -704,6 +704,24 @@ def insert_into_list(ori_list,match_string,insert_data):
 	if jk != "":
 		ori_list.insert(jk,insert_data)
 	return ori_list
+
+def color_print(msg, color='red', exits=False):
+	"""
+	Print colorful string.
+	颜色打印字符或者退出
+	"""
+	color_msg = {'blue': '\033[1;36m%s\033[0m',
+				 'green': '\033[1;32m%s\033[0m',
+				 'yellow': '\033[1;33m%s\033[0m',
+				 'red': '\033[1;31m%s\033[0m',
+				 'title': '\033[30;42m%s\033[0m',
+				 'info': '\033[32m%s\033[0m'}
+	msg = color_msg.get(color, 'red') % msg
+	print msg
+	if exits:
+		time.sleep(2)
+		sys.exit()
+	return msg
 #################################################################################
 
 
@@ -720,7 +738,13 @@ if __name__ == '__main__':
 	#for i in sort_dic_by_key_or_value(x,sort_by="value"):
 	#	print i
 	#print get_all_disk_of_this_machine()
-	print run_shell_command_2("ls -al /dddtmp/")
+	#print run_shell_command_2("ls -al /dddtmp/")
 	#print type(json_dumps_unicode_to_string({"你好":{"i111":"你好"}}))
 	#print type({u"你好":{"i111":"你好"}}) is dict
-	pass
+	#pass
+	color_print("Hello",color="blue")
+	color_print("Hello",color="red")
+	color_print("Hello",color="yellow")
+	color_print("Hello",color="green")
+	color_print("Hello",color="title")
+	color_print("Hello",color="info")
