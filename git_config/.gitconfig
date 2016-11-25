@@ -12,3 +12,5 @@
 	sf = show --pretty="" --name-only
 [push]
 	default = matching
+[core]
+	quotepath = off
