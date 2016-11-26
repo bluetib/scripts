@@ -722,6 +722,14 @@ def color_print(msg, color='red', exits=False):
 		time.sleep(2)
 		sys.exit()
 	return msg
+
+def traceback_to_file(log_obj):
+	try:
+		import traceback
+		for i in str(traceback.format_exc()).splitlines():
+			log_obj.write_err(i)
+	except Exception as e:
+		print "%s" % str(e)
 #################################################################################
 
 
