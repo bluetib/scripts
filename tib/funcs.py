@@ -190,7 +190,7 @@ def check_the_platform():
 		return "Unknown"
 
 def get_monday_to_sunday():
-	a = datetime.date.today()
+	a = datetime.datetime.today()
 	b = a.weekday()
 	the_last = a + datetime.timedelta(6 - a.weekday())
 	if b == 0:
@@ -203,11 +203,11 @@ def get_this_month_first_day_to_last():
 	date1 = datetime.datetime.now()
 	y=date1.year
 	m = date1.month
-	month_start_dt = datetime.date(y,m,1)
+	month_start_dt = datetime.datetime(y,m,1)
 	if m == 12:
-		month_end_dt = datetime.date(y+1,1,1) - datetime.timedelta(days=1)
+		month_end_dt = datetime.datetime(y+1,1,1) - datetime.timedelta(days=1)
 	else:
-		month_end_dt = datetime.date(y,m+1,1) - datetime.timedelta(days=1)
+		month_end_dt = datetime.datetime(y,m+1,1) - datetime.timedelta(days=1)
 	return (month_start_dt,month_end_dt)
 
 def get_this_quarter_first_day_and_last_day():
@@ -215,24 +215,24 @@ def get_this_quarter_first_day_and_last_day():
 	y=date1.year
 	month = date1.month
 	if month in (1,2,3):
-		quarter_start_dt = datetime.date(y,1,1)
-		quarter_end_dt = datetime.date(y,4,1) - datetime.timedelta(days=1)
+		quarter_start_dt = datetime.datetime(y,1,1)
+		quarter_end_dt = datetime.datetime(y,4,1) - datetime.timedelta(days=1)
 	elif month in (4,5,6):
-		quarter_start_dt = datetime.date(y,4,1)
-		quarter_end_dt = datetime.date(y,7,1) - datetime.timedelta(days=1)
+		quarter_start_dt = datetime.datetime(y,4,1)
+		quarter_end_dt = datetime.datetime(y,7,1) - datetime.timedelta(days=1)
 	elif month in (7,8,9):
-		quarter_start_dt = datetime.date(y,7,1)
-		quarter_end_dt = datetime.date(y,10,1) - datetime.timedelta(days=1)
+		quarter_start_dt = datetime.datetime(y,7,1)
+		quarter_end_dt = datetime.datetime(y,10,1) - datetime.timedelta(days=1)
 	else:
-		quarter_start_dt = datetime.date(y,10,1)
-		quarter_end_dt = datetime.date(y+1,1,1) - datetime.timedelta(days=1)
+		quarter_start_dt = datetime.datetime(y,10,1)
+		quarter_end_dt = datetime.datetime(y+1,1,1) - datetime.timedelta(days=1)
 	return (quarter_start_dt,quarter_end_dt)
 
 def get_this_quarter_total_days_and_remain_days():
-	date1 = datetime.datetime.now().date()
+	date1 = datetime.datetime.now()
 	a = get_this_quarter_first_day_and_last_day()
 	quarter_days = (a[1] - a[0]).days + 1
-	quarter_rem = (a[1] - date1).day
+	quarter_rem = (a[1] - date1).days
 	return (quarter_days,quarter_rem)
 
 def get_last_month_first_day_to_last():
@@ -240,10 +240,10 @@ def get_last_month_first_day_to_last():
 	y=date1.year
 	m = date1.month
 	if m==1:
-		start_date=datetime.date(y-1,12,1)
+		start_date=datetime.datetime(y-1,12,1)
 	else:
-		start_date=datetime.date(y,m-1,1)
-	end_date=datetime.date(y,m,1) - datetime.timedelta(days=1)
+		start_date=datetime.datetime(y,m-1,1)
+	end_date=datetime.datetime(y,m,1) - datetime.timedelta(days=1)
 	return (start_date,end_date)
 
 def convert_seconds_to_time(second):
@@ -257,7 +257,7 @@ def get_last_monday_to_sunday():
 	return (last_week_start_dt,last_week_end_dt)
 
 def get_the_date_of_last(days):
-	TODAY = datetime.date.today()
+	TODAY = datetime.datetime.today()
 	date_list =[]
 	for i in range(days,0,-1):
 		NUM_DAY = datetime.timedelta(days=i)
@@ -265,7 +265,7 @@ def get_the_date_of_last(days):
 	return date_list
 
 def get_the_one_date(num,choice):
-	TODAY = datetime.date.today()
+	TODAY = datetime.datetime.today()
 	if str(choice) == '-':
 		NUM_DAY = datetime.timedelta(days=(int(num)))
 		the_date = TODAY - NUM_DAY
@@ -535,11 +535,11 @@ def a_list_of_date(given_date,months_num):
 	year = int(str(given_date).strip().split('-')[0])
 	month = int(str(given_date).strip().split('-')[1])
 	out_list = []
-	date1 = datetime.date(year,month,1)
+	date1 = datetime.datetime(year,month,1)
 	for i in range(int(months_num)):
 		date2 = date1 - datetime.timedelta(days=1)
 		out_list.append(date2.strftime("%Y-%m"))
-		date1 = datetime.date(int(out_list[-1].split('-')[0]),int(out_list[-1].split('-')[1]),1)
+		date1 = datetime.datetime(int(out_list[-1].split('-')[0]),int(out_list[-1].split('-')[1]),1)
 	return out_list
 
 
@@ -750,6 +750,10 @@ if __name__ == '__main__':
 	#print type(json_dumps_unicode_to_string({"你好":{"i111":"你好"}}))
 	#print type({u"你好":{"i111":"你好"}}) is dict
 	#pass
+	#print get_monday_to_sunday()
+	#print get_this_month_first_day_to_last()
+	#print get_this_quarter_first_day_and_last_day()
+	#print get_this_quarter_total_days_and_remain_days()
 	color_print("Hello",color="blue")
 	color_print("Hello",color="red")
 	color_print("Hello",color="yellow")
