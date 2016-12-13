@@ -2,8 +2,8 @@
 
 
 #if [ $# -ne 6 ];then
-#	echo -e "Usage:\n\t $0 \"\" \"\"  \"\"  \"\" \"\" "
-#	exit 1
+#   echo -e "Usage:\n\t $0 \"\" \"\"  \"\"  \"\" \"\" "
+#   exit 1
 #fi
 
 echo -e "1.抓取从eth0来的源主机a.a.a.a 目标端口bbbb 的 UDP数据包，数目10个,并且显示每个包的ASCII,并且不解析IP和PORT"

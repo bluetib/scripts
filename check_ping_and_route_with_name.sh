@@ -2,8 +2,8 @@
 
 
 if [ $# -ne 1 ];then
-	echo -e "Usage:\n\t$0 \"IP Address\""
-	exit 1
+    echo -e "Usage:\n\t$0 \"IP Address\""
+    exit 1
 fi
 
 IP="$1"

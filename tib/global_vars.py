@@ -3,11 +3,11 @@
 
 #global mysql_host,mysql_password,mysql_user,mysql_port,mysql_db
 try:
-	import time,os,sys,datetime
+    import time,os,sys,datetime
 except ImportError,e:
-	print "Hi,Boss..I catch a exception: ",e
-	print "Exit now"
-	sys.exit()
+    print "Hi,Boss..I catch a exception: ",e
+    print "Exit now"
+    sys.exit()
 
 
 #---------------------------------------------------------
@@ -60,18 +60,18 @@ end_date_of_hour_stat = "%s %s:59:59" % (CURR_DATE_2,NOW_HOUR)
 
 
 if __name__ == '__main__' :
-	#print start_date_of_hour_stat
-	#print end_date_of_hour_stat
-	#print FIRST_DAY_OF_THIS_MONTH
-	#print LAST_DAY_OF_THIS_MONTH
-	#print RER_HTML_RESULT_FILE_FOR_TIB
-	print TOMORROW
-	#print CURR_DATE_1,CURR_TIME_1,CURR_TIME_2,CURR_TIME_3,CURR_TIME_4
-	#now_time = "%s %s " % (CURR_DATE_2,CURR_TIME_4)
-	#print BEGIN_OF_TODAY
-	#print NOW_HOUR
-	#print YESTERDAY
-	##print RER_HTML_RESULT_FILE_YESTERDAY
-	##print RER_HTML_RESULT_FILE_TODAY
-	#print NOW_TIME
-	print TODAY
+    #print start_date_of_hour_stat
+    #print end_date_of_hour_stat
+    #print FIRST_DAY_OF_THIS_MONTH
+    #print LAST_DAY_OF_THIS_MONTH
+    #print RER_HTML_RESULT_FILE_FOR_TIB
+    print TOMORROW
+    #print CURR_DATE_1,CURR_TIME_1,CURR_TIME_2,CURR_TIME_3,CURR_TIME_4
+    #now_time = "%s %s " % (CURR_DATE_2,CURR_TIME_4)
+    #print BEGIN_OF_TODAY
+    #print NOW_HOUR
+    #print YESTERDAY
+    ##print RER_HTML_RESULT_FILE_YESTERDAY
+    ##print RER_HTML_RESULT_FILE_TODAY
+    #print NOW_TIME
+    print TODAY
