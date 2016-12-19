@@ -8,7 +8,7 @@
 	lg2 = log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 	ck = checkout
 	st = status
-	br = branch
+	br = branch -a -vv
 	sf = show --pretty="" --name-only
 [push]
 	default = matching
