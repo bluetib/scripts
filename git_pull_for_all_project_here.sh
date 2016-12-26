@@ -8,13 +8,26 @@ if [ $# -eq 1 ];then
 else
     branch_name=""
 fi
+
+function check_branch_exist()
+{
+    local branch_name="$1"
+    N=$(git branch |sed "s+*++g"|column -t|egrep "^${branch_name}$"|wc -l)
+    if [ $N -eq 1 ];then
+        echo -e "yes"
+    else
+        echo -e "no"
+    fi
+}
+
 if [ -f "rep_list" ];then
     echo -e "--- OK. I will just use the rep_list file to pull from remote ---"
     sleep 1
     while read line
     do
-        rep=$(echo $line|awk -F':' '{print $1}')
-        branchs=$(echo $line|awk -F':' '{print $2}'|sed 's/,/ /g'|sed 's/"//')
+        rep=$(echo $line|awk -F' ' '{print $1}')
+        branchs=$(echo $line|awk -F' ' '{print $2}'|sed 's/,/ /g'|sed 's/"//')
+        last_checkout_to_branch=$(echo $line|awk -F' ' '{print $3}')
         cd $rep
         if [ ! -d ".git" ];then
             cd ..
@@ -23,15 +36,20 @@ if [ -f "rep_list" ];then
         echo -e "========================================== $rep ============================================="
         for i in $branchs
         do
-            git checkout $i
-            date1=$(date +%s)
-            git pull 2>/dev/null
-            date2=$(date +%s)
-            time_used=$((date2-date1))
-            echo -e "-------- Pull for branch [$i] used time seconds: [$time_used] ---------\n"
+            if [ $(check_branch_exist $i) = "yes" ];then
+                git checkout $i
+                date1=$(date +%s)
+                git pull 2>/dev/null
+                date2=$(date +%s)
+                time_used=$((date2-date1))
+                echo -e "-------- Pull for branch [$i] used time seconds: [$time_used] ---------\n"
+            else
+                echo -e "Continue cause branch [$i] not exist"
+                continue
+            fi
         done
-        echo -e "--- [checkout to dev] ---"
-        git checkout dev
+        echo -e "--- [checkout to $last_checkout_to_branch] ---"
+        git checkout $last_checkout_to_branch
         cd ..
     done < ./rep_list
     exit 12
