@@ -8,6 +8,34 @@ if [ $# -eq 1 ];then
 else
     branch_name=""
 fi
+if [ -f "rep_list" ];then
+    echo -e "--- OK. I will just use the rep_list file to pull from remote ---"
+    sleep 1
+    while read line
+    do
+        rep=$(echo $line|awk -F':' '{print $1}')
+        branchs=$(echo $line|awk -F':' '{print $2}'|sed 's/,/ /g'|sed 's/"//')
+        cd $rep
+        if [ ! -d ".git" ];then
+            cd ..
+            continue
+        fi
+        echo -e "========================================== $rep ============================================="
+        for i in $branchs
+        do
+            git checkout $i
+            date1=$(date +%s)
+            git pull 2>/dev/null
+            date2=$(date +%s)
+            time_used=$((date2-date1))
+            echo -e "-------- Pull for branch [$i] used time seconds: [$time_used] ---------\n"
+        done
+        echo -e "--- [checkout to dev] ---"
+        git checkout dev
+        cd ..
+    done < ./rep_list
+    exit 12
+fi
 
 for i in `ls -al|egrep ^d|egrep -v '\.$'|awk '{print $NF}'`
 do

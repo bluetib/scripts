@@ -11,6 +11,6 @@
 	br = branch -a -vv
 	sf = show --pretty="" --name-only
 [push]
-	default = matching
+	default = simple
 [core]
 	quotepath = off
