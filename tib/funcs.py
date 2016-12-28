@@ -727,7 +727,7 @@ def traceback_to_file(log_obj):
     try:
         import traceback
         for i in str(traceback.format_exc()).splitlines():
-            log_obj.write_err(i)
+            log_obj.write_err(i,2)
     except Exception as e:
         print "%s" % str(e)
 #################################################################################
