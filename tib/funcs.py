@@ -560,6 +560,16 @@ def run_shell_command_2(command_string):
     else:
         return ("problem",out.rstrip(),err.rstrip())
 
+def run_shell_command_3(command_string):
+    from subprocess import Popen,PIPE
+    cmd = "%s" % command_string.strip()
+    p = Popen(cmd,shell=True,stdout=PIPE,stderr=PIPE)
+    out,err = p.communicate()
+    if p.returncode == 0:
+        return ("ok",out.rstrip().splitlines(),err.rstrip())
+    else:
+        return ("problem",out.rstrip().splitlines(),err.rstrip())
+
 def is_valid_ip(ip_string):
     try:
         parts = ip_string.split('.')
