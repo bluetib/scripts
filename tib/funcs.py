@@ -740,6 +740,16 @@ def traceback_to_file(log_obj):
             log_obj.write_err(i,2)
     except Exception as e:
         print "%s" % str(e)
+
+def check_requests_version():
+    try:
+        import requests
+        if int(requests.__version__.split(".")[1]) < 7:
+            return "sorry\nrequests version too low"
+        else:
+            return "ok"
+    except Exception as e:
+        return "ERROR when import requests module."
 #################################################################################
 
 
