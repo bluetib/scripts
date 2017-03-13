@@ -750,7 +750,11 @@ def check_requests_version():
             return "ok"
     except Exception as e:
         return "ERROR when import requests module."
+
+def hasNumber(inputString):
+    return any(char.isdigit() for char in inputString)
 #################################################################################
+
 
 
 if __name__ == '__main__':
