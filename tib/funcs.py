@@ -753,6 +753,20 @@ def check_requests_version():
 
 def hasNumber(inputString):
     return any(char.isdigit() for char in inputString)
+
+def time_to_sec(time_str):
+    if len(time_str.split(":")) == 2:
+        h, m = time_str.split(':')
+        s = ""
+    elif len(time_str.split(":")) == 3:
+        h, m, s = time_str.split(':')
+    if str(h) == "":
+        h = 0
+    if str(m) == "":
+        m = 0
+    if str(s) == "":
+        s = 0
+    return int(h) * 3600 + int(m) * 60 + int(s)
 #################################################################################
 
 
