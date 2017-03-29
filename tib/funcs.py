@@ -760,6 +760,10 @@ def time_to_sec(time_str):
         s = ""
     elif len(time_str.split(":")) == 3:
         h, m, s = time_str.split(':')
+    elif len(time_str.split(":")) == 1:
+        h = time_str.split(":")[0]
+        m = ""
+        s = ""
     if str(h) == "":
         h = 0
     if str(m) == "":
@@ -768,8 +772,6 @@ def time_to_sec(time_str):
         s = 0
     return int(h) * 3600 + int(m) * 60 + int(s)
 #################################################################################
-
-
 
 if __name__ == '__main__':
     #a = "2.3.4.5"
