@@ -774,7 +774,9 @@ def time_to_sec(time_str):
 
 def deal_sys_encoding():
     import sys
-    sys.setdefaultencoding("utf8")
+    if sys.getdefaultencoding() != "utf8":
+        reload(sys)
+        sys.setdefaultencoding("utf8")
 
 def get_shell_cmd_output(shell_cmd_str):
     ret = run_shell_command_3(shell_cmd_str)
