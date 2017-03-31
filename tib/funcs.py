@@ -771,6 +771,10 @@ def time_to_sec(time_str):
     if str(s) == "":
         s = 0
     return int(h) * 3600 + int(m) * 60 + int(s)
+
+def deal_sys_encoding():
+    import sys
+    sys.setdefaultencoding("utf8")
 #################################################################################
 
 if __name__ == '__main__':
