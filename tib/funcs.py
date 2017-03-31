@@ -566,9 +566,25 @@ def run_shell_command_3(command_string):
     p = Popen(cmd,shell=True,stdout=PIPE,stderr=PIPE)
     out,err = p.communicate()
     if p.returncode == 0:
-        return ("ok",out.rstrip().splitlines(),err.rstrip())
+        ret_out = []
+        for t in out.rstrip().splitlines():
+            if str(t).strip() != "":
+                ret_out.append(str(t).strip())
+        ret_err = []
+        for t in err.rstrip().splitlines():
+            if str(t).strip() != "":
+                ret_err.append(str(t).strip())
+        return ("ok",ret_out,ret_err)
     else:
-        return ("problem",out.rstrip().splitlines(),err.rstrip())
+        ret_out = []
+        for t in out.rstrip().splitlines():
+            if str(t).strip() != "":
+                ret_out.append(str(t).strip())
+        ret_err = []
+        for t in err.rstrip().splitlines():
+            if str(t).strip() != "":
+                ret_err.append(str(t).strip())
+        return ("problem",ret_out,ret_err)
 
 def is_valid_ip(ip_string):
     try:
