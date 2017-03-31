@@ -775,6 +775,13 @@ def time_to_sec(time_str):
 def deal_sys_encoding():
     import sys
     sys.setdefaultencoding("utf8")
+
+def get_shell_cmd_output(shell_cmd_str):
+    ret = run_shell_command_3(shell_cmd_str)
+    if ret[0] == "ok":
+        return ret[1]
+    else:
+        return "failed"
 #################################################################################
 
 if __name__ == '__main__':
