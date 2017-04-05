@@ -9,6 +9,15 @@ else
     branch_name=""
 fi
 
+function check_if_ahead()
+{
+    local branch_name="$1"
+    ahead_num=$(git status|egrep "is ahead of"|egrep -w -o "[0-9]+"|wc -l)
+    if [ $ahead_num -ge 1 ];then
+        echo -e "=== |||||||=========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||| ==="
+    fi
+}
+
 function check_branch_exist()
 {
     local branch_name="$1"
@@ -38,10 +47,7 @@ if [ -f "rep_list" ];then
         do
             if [ $(check_branch_exist $i) = "yes" ];then
                 git checkout $i
-                ahead_num=$(git status|egrep "is ahead of"|egrep -w -o "[0-9]+"|wc -l)
-                if [ $ahead_num -ge 1 ];then
-                    echo -e "=== |||||||=========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||| ==="
-                fi
+                check_if_ahead $i
                 git status
                 echo -e "------------------"
             else
@@ -51,6 +57,7 @@ if [ -f "rep_list" ];then
         done
         echo -e "--- [checkout to $last_checkout_to_branch] ---"
         git checkout $last_checkout_to_branch
+        check_if_ahead $last_checkout_to_branch
         cd ..
     done < ./rep_list
     exit 12
@@ -82,11 +89,13 @@ do
             fi
         fi
     fi
-    ahead_num=$(git status|egrep "is ahead of"|egrep -w -o "[0-9]+"|wc -l)
-    if [ $ahead_num -ge 1 ];then
-        echo -e "=== ||||||||========  Please check [Need To Push] ahead of $ahead_num commits ========|||||||| ==="
+    if [ "$branch_name" != "" ];then
+        check_if_ahead "$branch_name"
+        git status
+    else
+        check_if_ahead "dev"
+        git status
     fi
-    git status
     N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep "dev"|wc -l)
     if [ $N2 -eq 1 ];then
         echo -e " ---- checkout to dev ----"
