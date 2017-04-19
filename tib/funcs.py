@@ -913,6 +913,15 @@ def get_shell_cmd_output(shell_cmd_str):
         return ret[1]
     else:
         return "failed"
+
+def read_json_from_file(file_path):
+    if os.path.exists(file_path) is not True:
+        return "{}"
+    else:
+        if os.path.getsize(file_path) == 0 or str(open(file_path).read().strip("\n")) == "{}":
+            return "{}"
+        else:
+            return open(file_path).read().strip().strip("\n")
 #################################################################################
 
 if __name__ == '__main__':
