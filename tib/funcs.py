@@ -859,11 +859,14 @@ def color_print(msg, color='red', exits=False):
         sys.exit()
     return msg
 
-def traceback_to_file(log_obj):
+def traceback_to_file(log_obj,debug=0):
     try:
         import traceback
         for i in str(traceback.format_exc()).splitlines():
-            log_obj.write_err(i,2)
+            if debug == 1:
+                log_obj.write_err(i,3)
+            else:
+                log_obj.write_err(i,2)
     except Exception as e:
         print "%s" % str(e)
 
@@ -939,3 +942,4 @@ if __name__ == '__main__':
     color_print("Hello",color="green")
     color_print("Hello",color="title")
     color_print("Hello",color="info")
+    traceback_to_file("l")
