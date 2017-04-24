@@ -922,6 +922,22 @@ def read_json_from_file(file_path):
             return "{}"
         else:
             return open(file_path).read().strip().strip("\n")
+
+def get_file_abs_path(rel_path):
+    try:
+        if os.path.exists(rel_path) is True:
+            abs_path,file_name = os.path.split(os.path.realpath(os.path.expanduser(rel_path)))
+            return (abs_path,file_name)
+    except Exception as e:
+        return False
+
+#def check_log_keyworkd_warn(log_path,warn_file,keyword,tail_num):
+#   abs_log_path = get_file_abs_path(log_path)
+#   if not abs_log_path:
+#       egrep_cmd = '''tail -%s %s|egrep "%s" |'''
+
+
+
 #################################################################################
 
 if __name__ == '__main__':
