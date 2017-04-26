@@ -113,6 +113,8 @@ class log2:
             #my_func.mk_dir(elog_path)
             my_func.mk_dir_if_not_exist(self.rlog)
             my_func.mk_dir_if_not_exist(self.elog)
+            self.fl_e = my_func.lock_the_file(self.elog)
+            self.fl_r = my_func.lock_the_file(self.rlog)
             #print self.rlog
             #print self.elog
             #sys.exit()
@@ -125,19 +127,22 @@ class log2:
         if (LEVEL == 1):
             #print "Don't show log info 1"
             print MESSAGE
-            time.sleep(0.1)
         elif (LEVEL == 2):
             #print "Don't show log info 2"
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-            File_Object = open(self.rlog,'a+')
-            File_Object.write(NEW_MESSAGE)
-            File_Object.close()
-            time.sleep(0.1)
+            with self.fl_r:
+                with open(self.rlog,'a+') as File_Object:
+                    File_Object.write(NEW_MESSAGE)
+                    File_Object.flush()
+                    File_Object.close()
+
         elif (LEVEL == 3):
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-            File_Object = open(self.rlog,'a+')
-            File_Object.write(NEW_MESSAGE)
-            File_Object.close()
+            with self.fl_r:
+                with open(self.rlog,'a+') as File_Object:
+                    File_Object.write(NEW_MESSAGE)
+                    File_Object.flush()
+                    File_Object.close()
             print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
         else:
             print "Sorry.. Some ERROR..[You must give me 1 or 2 or 3]"
@@ -151,21 +156,22 @@ class log2:
         if (LEVEL == 1):
             #print "Don't show log info 1"
             print MESSAGE
-            time.sleep(0.1)
         elif (LEVEL == 2):
             #print "Don't show log info 2"
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-            File_Object = open(self.elog,'a+')
-            File_Object.write(NEW_MESSAGE)
-            File_Object.close()
-            time.sleep(0.1)
+            with self.fl_e:
+                with open(self.elog,'a+') as File_Object:
+                    File_Object.write(NEW_MESSAGE)
+                    File_Object.flush()
+                    File_Object.close()
         elif (LEVEL == 3):
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-            File_Object = open(self.elog,'a+')
-            File_Object.write(NEW_MESSAGE)
-            File_Object.close()
+            with self.fl_e:
+                with open(self.elog,'a+') as File_Object:
+                    File_Object.write(NEW_MESSAGE)
+                    File_Object.flush()
+                    File_Object.close()
             print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-            time.sleep(0.1)
         else:
             print "Sorry.. Some ERROR..[You must give me 1 or 2 or 3]"
             sys.exit()
@@ -207,21 +213,18 @@ class log:
         if (LEVEL == 1):
             #print "Don't show log info 1"
             print MESSAGE
-            time.sleep(0.1)
         elif (LEVEL == 2):
             #print "Don't show log info 2"
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
             File_Object = open(self.rlog,'a+')
             File_Object.write(NEW_MESSAGE)
             File_Object.close()
-            time.sleep(0.1)
         elif (LEVEL == 3):
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
             File_Object = open(self.rlog,'a+')
             File_Object.write(NEW_MESSAGE)
             File_Object.close()
             print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-            time.sleep(0.1)
         else:
             print "Sorry.. Some ERROR..[You must give me 1 or 2 or 3]"
             sys.exit()
@@ -234,21 +237,18 @@ class log:
         if (LEVEL == 1):
             #print "Don't show log info 1"
             print MESSAGE
-            time.sleep(0.1)
         elif (LEVEL == 2):
             #print "Don't show log info 2"
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
             File_Object = open(self.elog,'a+')
             File_Object.write(NEW_MESSAGE)
             File_Object.close()
-            time.sleep(0.1)
         elif (LEVEL == 3):
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
             File_Object = open(self.elog,'a+')
             File_Object.write(NEW_MESSAGE)
             File_Object.close()
             print "[%s %s] %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
-            time.sleep(0.1)
         else:
             print "Sorry.. Some ERROR..[You must give me 1 or 2 or 3]"
             sys.exit()
