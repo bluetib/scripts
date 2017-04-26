@@ -113,8 +113,10 @@ class log2:
             #my_func.mk_dir(elog_path)
             my_func.mk_dir_if_not_exist(self.rlog)
             my_func.mk_dir_if_not_exist(self.elog)
-            my_func.touch(self.rlog)
-            my_func.touch(self.elog)
+            if os.path.exists(self.rlog) is not True:
+                my_func.touch(self.rlog)
+            if os.path.exists(self.elog) is not True:
+                my_func.touch(self.elog)
             self.fl_e = my_func.lock_the_file(self.elog)
             self.fl_r = my_func.lock_the_file(self.rlog)
             #print self.rlog
