@@ -115,6 +115,8 @@ class log2:
             my_func.mk_dir_if_not_exist(self.elog)
             self.fl_e = my_func.lock_the_file(self.elog)
             self.fl_r = my_func.lock_the_file(self.rlog)
+            my_func.touch(self.rlog)
+            my_func.touch(self.elog)
             #print self.rlog
             #print self.elog
             #sys.exit()
