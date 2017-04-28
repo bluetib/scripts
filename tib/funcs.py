@@ -136,9 +136,12 @@ class FileLock(object):
             return True
         return False
 
-def lock_the_file(file_path):
+def lock_the_file(file_path,lock_file_con=None):
     if os.path.exists(file_path) is True:
-        lock_t = FileLock(file_path)
+        if lock_file_con:
+            lock_t = FileLock(file_path,lock_file_contents=lock_file_con)
+        else:
+            lock_t = FileLock(file_path)
         return lock_t
     else:
         raise Exception("no file [%s] found" % str(file_path).strip())
@@ -935,7 +938,7 @@ def read_json_from_file(file_path):
         else:
             return open(file_path).read().strip().strip("\n")
 
-def get_file_abs_path(rel_path):
+def get_file_abs_path_two_part(rel_path):
     try:
         if os.path.exists(rel_path) is True:
             abs_path,file_name = os.path.split(os.path.realpath(os.path.expanduser(rel_path)))
@@ -943,6 +946,13 @@ def get_file_abs_path(rel_path):
     except Exception as e:
         return False
 
+def get_file_abs_path(rel_path):
+    try:
+        if os.path.exists(rel_path) is True:
+            abs_path,file_name = os.path.split(os.path.realpath(os.path.expanduser(rel_path)))
+            return "%s%s%s" % (abs_path,os.path.sep,file_name)
+    except Exception as e:
+        return False
 #def check_log_keyworkd_warn(log_path,warn_file,keyword,tail_num):
 #   abs_log_path = get_file_abs_path(log_path)
 #   if not abs_log_path:
