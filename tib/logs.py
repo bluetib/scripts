@@ -117,13 +117,12 @@ class log2:
                 my_func.touch(self.rlog)
             if os.path.exists(self.elog) is not True:
                 my_func.touch(self.elog)
-            self.fl_e = my_func.lock_the_file(self.elog)
-            self.fl_r = my_func.lock_the_file(self.rlog)
             #print self.rlog
             #print self.elog
             #sys.exit()
 
     def write_run(self,MESSAGE,LEVEL=3):
+        self.fl_r = my_func.lock_the_file(self.rlog)
         if not MESSAGE:
             return -1
         if not LEVEL:
@@ -139,7 +138,6 @@ class log2:
                     File_Object.write(NEW_MESSAGE)
                     File_Object.flush()
                     File_Object.close()
-
         elif (LEVEL == 3):
             NEW_MESSAGE = "[%s %s] %s\n" % (vars.CURR_DATE_1,vars.CURR_TIME_4,MESSAGE)
             with self.fl_r:
@@ -153,6 +151,7 @@ class log2:
             sys.exit()
 
     def write_err(self,MESSAGE,LEVEL=3):
+        self.fl_e = my_func.lock_the_file(self.elog)
         if not MESSAGE:
             return -1
         if not LEVEL:
