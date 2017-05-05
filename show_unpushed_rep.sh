@@ -14,7 +14,7 @@ function check_if_ahead()
     local branch_name="$1"
     ahead_num=$(git status|egrep "is ahead of"|egrep -w -o "[0-9]+"|wc -l)
     if [ $ahead_num -ge 1 ];then
-        echo -e "=== |||||||=========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||| ==="
+        echo -e "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
     fi
 }
 

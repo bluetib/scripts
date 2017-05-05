@@ -19,6 +19,8 @@ import zipfile
 # from cryptography.hazmat.primitives.ciphers.base import Cipher
 # import openssl
 # import socket
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 #---------------------------------------------------------
 #Please change here with your own key and method (methods all in the list all_method_can_use below)
@@ -147,6 +149,18 @@ def find_library(possible_lib_names, search_symbol, library_name):
 def encrypt_or_decrypt(cipher_obj,deal_file,e1_or_d0,force_update="yes"):
     global data_size_in_e_or_d
     opend_f = open("%s" % deal_file,'rb')
+    if e1_or_d0 == 1:
+        dest_file = "%s.locked" % deal_file
+        dest_file_ori = "%s.locked.bak" % deal_file
+        if os.path.exists(dest_file):
+            print("[tmp rename %s to %s]" % (dest_file,dest_file_ori))
+            os.rename(dest_file,dest_file_ori)
+    elif e1_or_d0 == 0:
+        dest_file = "%s" % deal_file.replace(".locked","")
+        dest_file_ori = "%s.bak" % deal_file.replace(".locked","")
+        if os.path.exists(dest_file):
+            print("[tmp rename %s to %s]" % (dest_file,dest_file_ori))
+            os.rename(dest_file,dest_file_ori)
     while True:
         chunk_data = opend_f.read(data_size_in_e_or_d)
         if not chunk_data:
