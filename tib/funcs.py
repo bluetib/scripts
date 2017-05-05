@@ -141,7 +141,7 @@ def lock_the_file(file_path):
         lock_t = FileLock(file_path)
         return lock_t
     else:
-        raise Exception("no file [%s] found" % str(file_path).strip())
+        return None
 
 def _decode_list(data):
     rv = []
