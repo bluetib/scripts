@@ -3,6 +3,13 @@
 now_path=`cd $(dirname $0) && pwd`
 cd $now_path
 
+if [ -f "/usr/local/bin/funcs.sh" ];then
+    . /usr/local/bin/funcs.sh
+    color="yes"
+else
+    color="no"
+fi
+
 if [ $# -eq 1 ];then
     branch_name="$1"
 else
@@ -14,7 +21,11 @@ function check_if_ahead()
     local branch_name="$1"
     ahead_num=$(git status|egrep "is ahead of"|egrep -w -o "[0-9]+"|wc -l)
     if [ $ahead_num -ge 1 ];then
-        echo -e "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
+        if [ $color == "yes" ];then
+            clr_red "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
+        else
+            echo -e "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
+        fi
     fi
 }
 
