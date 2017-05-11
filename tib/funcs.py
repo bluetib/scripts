@@ -1028,6 +1028,14 @@ def get_time_formarted(choice,with_space=True,with_T=False):
                 return "%s %s" % (vars.CURR_DATE_3,vars.CURR_TIME_3)
             elif int(str(choice).lower().strip()) == 12:
                 return "%s %s" % (vars.CURR_DATE_3,vars.CURR_TIME_4)
+            elif int(str(choice).lower().strip()) == 13:
+                return "%s %s" % (vars.CURR_DATE_4,vars.CURR_TIME_1)
+            elif int(str(choice).lower().strip()) == 14:
+                return "%s %s" % (vars.CURR_DATE_4,vars.CURR_TIME_2)
+            elif int(str(choice).lower().strip()) == 15:
+                return "%s %s" % (vars.CURR_DATE_4,vars.CURR_TIME_3)
+            elif int(str(choice).lower().strip()) == 16:
+                return "%s %s" % (vars.CURR_DATE_4,vars.CURR_TIME_4)
             else:
                 return None
         else:

@@ -18,6 +18,7 @@ CURR_DATE_DAY = time.strftime("%d")
 CURR_DATE_1 = time.strftime("%Y_%m_%d")
 CURR_DATE_2 = time.strftime("%Y-%m-%d")
 CURR_DATE_3 = time.strftime("%Y%m%d")
+CURR_DATE_4 = time.strftime("%Y.%m.%d")
 
 CURR_TIME_1 = time.strftime("%H_%M_%S")
 CURR_TIME_2 = time.strftime("%H-%M-%S")
