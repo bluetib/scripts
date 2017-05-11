@@ -1058,6 +1058,16 @@ def get_time_formarted(choice,with_space=True,with_T=False):
             else:
                 return None
 
+def check_process_running(name):
+    cmd_string = '''ps -e faux|egrep -i -w "%s"|egrep -v grep|wc -l''' % name
+    number = get_shell_cmd_output(cmd_string)
+    if number[0] != "failed":
+        if int(number[0]) > 0:
+            return "yes"
+        else:
+            return "no"
+    else:
+        raise Exception("some error")
 
 #################################################################################
 
