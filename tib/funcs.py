@@ -974,7 +974,7 @@ def get_file_abs_path(rel_path):
 #       egrep_cmd = '''tail -%s %s|egrep "%s" |'''
 
 
-def get_time_formarted(choice,with_space=True,with_T=False):
+def get_time_formated(choice,with_space=True,with_T=False):
     if with_T:
         if int(str(choice).lower().strip()) == 1:
             return "%sT%s" % (vars.CURR_DATE_1,vars.CURR_TIME_1)
