@@ -121,7 +121,7 @@ class log2:
             #print self.elog
             #sys.exit()
 
-    def write_run(self,MESSAGE,LEVEL=3):
+    def write_run(self,MESSAGE,LEVEL=2):
         if not MESSAGE:
             return -1
         if not LEVEL:
@@ -147,7 +147,7 @@ class log2:
             print "Sorry.. Some ERROR..[You must give me 1 or 2 or 3]"
             sys.exit()
 
-    def write_err(self,MESSAGE,LEVEL=3):
+    def write_err(self,MESSAGE,LEVEL=2):
         if not MESSAGE:
             return -1
         if not LEVEL:

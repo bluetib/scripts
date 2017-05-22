@@ -23,6 +23,7 @@ from os.path import join, getsize
 from operator import itemgetter as i
 from collections import OrderedDict
 import global_vars as vars
+from decimal import *
 
 import socket
 socket.setdefaulttimeout(15)
@@ -155,7 +156,7 @@ def lock_the_file_and_touch(file_path,lock_file_con=None):
             lock_t = FileLock(file_path)
         return lock_t
     else:
-        a,b = get_file_abs_path_two_part(file_path)
+        a,b = os.path.split(file_path)
         mk_dir_if_not_exist(a)
         touch('''%s%s%s''' % (a,os.path.sep,b))
         lock_t = FileLock(file_path)
@@ -1077,9 +1078,19 @@ def check_process_running(name):
     else:
         raise Exception("some error")
 
+def cal_fu_li(money,rate,year):
+    sum = 0
+    rate = float(Decimal(rate) / 100)
+    for i  in range(1,int(year)+1):
+        sum = float(money) * float( 1 + rate)
+        #print "%s -> %s [%s]" % (i,sum,float(1 + rate))
+        money = sum
+    return str(sum)
+
 #################################################################################
 
 if __name__ == '__main__':
+    print cal_fu_li(1,200,10)
     #a = "2.3.4.5"
     #str_1 = "2#?3TvP?C;B2fjwfF@"
     #a = encrypt_str_2(str_1)
