@@ -24,6 +24,7 @@ from operator import itemgetter as i
 from collections import OrderedDict
 import global_vars as vars
 from decimal import *
+import calendar
 
 import socket
 socket.setdefaulttimeout(15)
@@ -397,13 +398,33 @@ def get_last_monday_to_sunday():
     last_week_end_dt = date1-datetime.timedelta(days=date1.weekday()+1)
     return (last_week_start_dt,last_week_end_dt)
 
-def get_the_date_of_last(days):
+def get_the_date_of_last(days,out_string=False):
     TODAY = datetime.datetime.today()
     date_list =[]
     for i in range(days,0,-1):
         NUM_DAY = datetime.timedelta(days=i)
         date_list.append(TODAY - NUM_DAY)
-    return date_list
+    if out_string == True:
+        return convert_datetime_to_string(date_list)
+    else:
+        return date_list
+
+def get_the_date_of_last_with_today(days,out_string=False):
+    TODAY = datetime.datetime.today()
+    date_list =[]
+    for i in range(days):
+        NUM_DAY = datetime.timedelta(days=i)
+        date_list.insert(0,TODAY - NUM_DAY)
+    if out_string == True:
+        return convert_datetime_to_string(date_list)
+    else:
+        return date_list
+
+def convert_datetime_to_string(datetime_obj_list):
+    ret = []
+    for i in datetime_obj_list:
+        ret.append(i.strftime("%Y-%m-%d %H:%M:%S"))
+    return ret
 
 def get_the_one_date(num,choice):
     TODAY = datetime.datetime.today()
@@ -1086,6 +1107,12 @@ def cal_fu_li(money,rate,year):
         #print "%s -> %s [%s]" % (i,sum,float(1 + rate))
         money = sum
     return str(sum)
+
+def get_the_day_of_week():
+    today = datetime.datetime.today()
+    day_num = today.isoweekday()
+    day_name = calendar.day_name[today.weekday()]
+    return ('''%s,%s''' % (day_num,day_name))
 
 #################################################################################
 
