@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [ $# -ne 2 ];then
-    echo -e "Usage:\n\t$0 IP PORT"
+    echo -e "Usage:\n\t$0 IP PORT \"important: [here should be http_proxy polipo]\""
     exit 1
 fi
 
