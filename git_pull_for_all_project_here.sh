@@ -48,8 +48,11 @@ if [ -f "rep_list" ];then
                 continue
             fi
         done
-        echo -e "--- [checkout to $last_checkout_to_branch] ---"
-        git checkout $last_checkout_to_branch
+        N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "$last_checkout_to_branch"|wc -l)
+        if [ $N2 -eq 1 ];then
+            echo -e "--- [checkout to $last_checkout_to_branch] ---"
+            git checkout $last_checkout_to_branch
+        fi
         cd ..
     done < ./rep_list
     exit 12
@@ -65,13 +68,13 @@ do
     fi
     echo -e "======================================= $i ========================================="
     if [ "$branch_name" != "" ];then
-        N=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep ${branch_name}|wc -l)
+        N=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w ${branch_name}|wc -l)
         if [ $N -eq 1 ];then
             echo -e "=== checkout to $branch_name to update this branch $branch_name ==="
             git checkout $branch_name
             git br -a
         else
-            N1=$(git branch -a|egrep remote|column -t|egrep ${branch_name}|wc -l)
+            N1=$(git branch -a|egrep remote|column -t|egrep -w ${branch_name}|wc -l)
             if [ $N1 -eq 1 ];then
                 git checkout -b ${branch_name} origin/${branch_name}
             else
@@ -85,7 +88,7 @@ do
     git pull 2>/dev/null
     date2=$(date +%s)
     time_used=$((date2-date1))
-    N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep "dev"|wc -l)
+    N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "dev"|wc -l)
     if [ $N2 -eq 1 ];then
         echo -e " ---- checkout to dev ----"
         git checkout dev
@@ -93,3 +96,4 @@ do
     echo -e "===================================== Pull used time seconds: [$time_used] ===========================================\n"
     cd ..
 done
+
