@@ -11,8 +11,7 @@ else
 fi
 
 if [ $# -eq 1 ];then
-    branch_name="$1"
-else
+    branch_name="$1" else
     branch_name=""
 fi
 
@@ -48,6 +47,9 @@ if [ -f "rep_list" ];then
         rep=$(echo $line|awk -F' ' '{print $1}')
         branchs=$(echo $line|awk -F' ' '{print $2}'|sed 's/,/ /g'|sed 's/"//')
         last_checkout_to_branch=$(echo $line|awk -F' ' '{print $3}')
+        if [ ! -d "$rep" ];then
+            continue
+        fi
         cd $rep
         if [ ! -d ".git" ];then
             cd ..
