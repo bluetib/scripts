@@ -20,6 +20,33 @@ function check_branch_exist()
     fi
 }
 
+function get_default_branch_if_need()
+{
+    num=$(git branch -a|egrep -v "origin"|egrep '^\*'|sed 's/* //'|column -t|wc -l)
+    if [ $num -eq 1 ];then
+        default_branch_name=$(git branch -a|egrep -v "remotes"|egrep '^\*'|sed 's/* //'|column -t)
+        echo -e "$default_branch_name"
+    else
+        echo -e "no"
+    fi
+}
+
+function get_remote_info_by_branch_name()
+{
+    local branch_name="$1"
+    N1=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|wc -l)
+    if [ $N1 -gt 1 ];then
+        echo -e "+++++"
+        git remote -v
+        echo -e "+++++"
+        return 1
+    fi
+    remote=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|awk -F'/' '{print $2}')
+    echo -e "+++++"
+    git remote -v|egrep "^${remote}"
+    echo -e "+++++"
+}
+
 if [ -f "rep_list" ];then
     echo -e "--- OK. I will just use the rep_list file to pull from remote ---"
     sleep 1
@@ -38,11 +65,14 @@ if [ -f "rep_list" ];then
             continue
         fi
         echo -e "========================================== $rep ============================================="
+        no_branch_match="yes"
         for i in $branchs
         do
             if [ $(check_branch_exist $i) = "yes" ];then
+                no_branch_match="no"
                 git checkout $i
                 date1=$(date +%s)
+                get_remote_info_by_branch_name $i
                 git pull 2>/dev/null
                 date2=$(date +%s)
                 time_used=$((date2-date1))
@@ -52,6 +82,17 @@ if [ -f "rep_list" ];then
                 continue
             fi
         done
+        if [ "$no_branch_match" == "yes" ];then
+            default_branch=$(get_default_branch_if_need)
+        fi
+        if [ "$default_branch" != "no" ];then
+            git checkout $default_branch
+            date1=$(date +%s)
+            git pull 2>/dev/null
+            date2=$(date +%s)
+            time_used=$((date2-date1))
+            echo -e "-------- Pull for branch [$default_branch] used time seconds: [$time_used] ---------\n"
+        fi
         N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "$last_checkout_to_branch"|wc -l)
         if [ $N2 -eq 1 ];then
             echo -e "--- [checkout to $last_checkout_to_branch] ---"
@@ -88,7 +129,14 @@ do
             fi
         fi
     fi
-    echo -e "--- git pulling for branch $branch_name ---"
+    if [ "$branch_name" = "" ];then
+        default_branch=$(get_default_branch_if_need)
+        echo -e "--- git pulling for branch default_branch [$default_branch] ---"
+        get_remote_info_by_branch_name $default_branch
+    else
+        echo -e "--- git pulling for branch the_branch [$branch_name] ---"
+        get_remote_info_by_branch_name $branch_name
+    fi
     git pull 2>/dev/null
     date2=$(date +%s)
     time_used=$((date2-date1))
