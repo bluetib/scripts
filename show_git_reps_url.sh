@@ -53,8 +53,11 @@ if [ -f "rep_list" ];then
         #   fi
         #done
         echo -e ""
-        echo -e "--- [checkout to $last_checkout_to_branch] ---"
-        git checkout $last_checkout_to_branch
+        N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "$last_checkout_to_branch"|wc -l)
+        if [ $N2 -eq 1 ];then
+            echo -e "--- [checkout to $last_checkout_to_branch] ---"
+            git checkout $last_checkout_to_branch
+        fi
         cd ..
     done < ./rep_list
     exit 12
