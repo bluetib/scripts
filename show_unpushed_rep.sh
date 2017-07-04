@@ -11,8 +11,7 @@ else
 fi
 
 if [ $# -eq 1 ];then
-    branch_name="$1"
-else
+    branch_name="$1" else
     branch_name=""
 fi
 
@@ -32,7 +31,7 @@ function check_if_ahead()
 function check_branch_exist()
 {
     local branch_name="$1"
-    N=$(git branch |sed "s+*++g"|column -t|egrep "^${branch_name}$"|wc -l)
+    N=$(git branch |sed "s+*++g"|column -t|egrep -w "^${branch_name}$"|wc -l)
     if [ $N -eq 1 ];then
         echo -e "yes"
     else
@@ -48,6 +47,9 @@ if [ -f "rep_list" ];then
         rep=$(echo $line|awk -F' ' '{print $1}')
         branchs=$(echo $line|awk -F' ' '{print $2}'|sed 's/,/ /g'|sed 's/"//')
         last_checkout_to_branch=$(echo $line|awk -F' ' '{print $3}')
+        if [ ! -d "$rep" ];then
+            continue
+        fi
         cd $rep
         if [ ! -d ".git" ];then
             cd ..
@@ -66,9 +68,12 @@ if [ -f "rep_list" ];then
                 continue
             fi
         done
-        echo -e "--- [checkout to $last_checkout_to_branch] ---"
-        git checkout $last_checkout_to_branch
-        check_if_ahead $last_checkout_to_branch
+        N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "$last_checkout_to_branch"|wc -l)
+        if [ $N2 -eq 1 ];then
+            echo -e "--- [checkout to $last_checkout_to_branch] ---"
+            git checkout $last_checkout_to_branch
+            check_if_ahead $last_checkout_to_branch
+        fi
         cd ..
     done < ./rep_list
     exit 12
@@ -90,7 +95,7 @@ do
             git checkout $branch_name
             git branch -a
         else
-            N1=$(git branch -a|egrep remote|column -t|egrep ${branch_name}|wc -l)
+            N1=$(git branch -a|egrep remote|column -t|egrep -w ${branch_name}|wc -l)
             if [ $N1 -eq 1 ];then
                 git checkout -b ${branch_name} origin/${branch_name}
             else
@@ -107,7 +112,7 @@ do
         check_if_ahead "dev"
         git status
     fi
-    N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep "dev"|wc -l)
+    N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "dev"|wc -l)
     if [ $N2 -eq 1 ];then
         echo -e " ---- checkout to dev ----"
         git checkout dev

@@ -28,7 +28,11 @@ if [ -f "rep_list" ];then
         rep=$(echo $line|awk -F' ' '{print $1}')
         branchs=$(echo $line|awk -F' ' '{print $2}'|sed 's/,/ /g'|sed 's/"//')
         last_checkout_to_branch=$(echo $line|awk -F' ' '{print $3}')
-        cd $rep
+        if [ -d "$rep" ];then
+            cd $rep
+        else
+            continue
+        fi
         if [ ! -d ".git" ];then
             cd ..
             continue
