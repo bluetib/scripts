@@ -58,10 +58,12 @@ if [ -f "rep_list" ];then
         if [ -d "$rep" ];then
             cd $rep
         else
+            echo -e " ----- Sorry... [$rep] not found. ----- "
             continue
         fi
         if [ ! -d ".git" ];then
             cd ..
+            echo -e " +++++ Sorry... [$rep] is not right +++++ "
             continue
         fi
         echo -e "========================================== $rep ============================================="
