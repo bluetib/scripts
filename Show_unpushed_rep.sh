@@ -75,13 +75,21 @@ if [ -f "rep_list" ];then
         branchs=$(echo $line|awk -F' ' '{print $2}'|sed 's/,/ /g'|sed 's/"//')
         last_checkout_to_branch=$(echo $line|awk -F' ' '{print $3}')
         if [ ! -d "$rep" ];then
-            echo -e " ----- Sorry...[$rep] not found.. ----- "
+            if [ $color == "yes" ];then
+                clr_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
+            else
+                echo -e " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
+            fi
             continue
         fi
         cd $rep
         if [ ! -d ".git" ];then
             cd ..
-            echo -e " +++++ Sorry...[$rep] is not right .. +++++ "
+            if [ $color == "yes" ];then
+                clr_red " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
+            else
+                echo -e " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
+            fi
             continue
         fi
         echo -e "========================================== $rep ============================================="

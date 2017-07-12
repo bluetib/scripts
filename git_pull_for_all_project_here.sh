@@ -9,6 +9,13 @@ else
     branch_name=""
 fi
 
+if [ -f "/usr/local/bin/funcs.sh" ];then
+    . /usr/local/bin/funcs.sh
+    color="yes"
+else
+    color="no"
+fi
+
 function check_branch_exist()
 {
     local branch_name="$1"
@@ -58,12 +65,20 @@ if [ -f "rep_list" ];then
         if [ -d "$rep" ];then
             cd $rep
         else
-            echo -e " ----- Sorry... [$rep] not found. ----- "
+            if [ $color == "yes" ];then
+                clr_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
+            else
+                echo -e " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
+            fi
             continue
         fi
         if [ ! -d ".git" ];then
             cd ..
-            echo -e " +++++ Sorry... [$rep] is not right +++++ "
+            if [ $color == "yes" ];then
+                clr_red " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
+            else
+                echo -e " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
+            fi
             continue
         fi
         echo -e "========================================== $rep ============================================="
