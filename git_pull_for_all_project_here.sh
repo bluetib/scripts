@@ -41,16 +41,9 @@ function get_default_branch_if_need()
 function get_remote_info_by_branch_name()
 {
     local branch_name="$1"
-    N1=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|wc -l)
-    if [ $N1 -gt 1 ];then
-        echo -e "+++++"
-        git remote -v
-        echo -e "+++++"
-        return 1
-    fi
-    remote=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|awk -F'/' '{print $2}')
+    remote_name=$(git branch -a -vv|egrep -v "remotes"|sed 's|\*||g'|column -t|egrep "^${branch_name}"|egrep -w "${branch_name}"|awk '{print $3}'|sed 's|\[||g'|sed 's|\]||g'|awk -F'/' '{print $1}')
     echo -e "+++++"
-    git remote -v|egrep "^${remote}"
+    git remote -v|egrep "^${remote_name}"
     echo -e "+++++"
 }
 
