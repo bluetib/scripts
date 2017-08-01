@@ -3,17 +3,17 @@
 now_path=`cd $(dirname $0) && pwd`
 cd $now_path
 
-if [ $# -eq 1 ];then
-    branch_name="$1"
-else
-    branch_name=""
-fi
-
 if [ -f "/usr/local/bin/funcs.sh" ];then
     . /usr/local/bin/funcs.sh
     color="yes"
 else
     color="no"
+fi
+
+if [ $# -eq 1 ];then
+    branch_name="$1"
+else
+    branch_name=""
 fi
 
 function check_branch_exist()
@@ -41,10 +41,29 @@ function get_default_branch_if_need()
 function get_remote_info_by_branch_name()
 {
     local branch_name="$1"
-    remote_name=$(git branch -a -vv|egrep -v "remotes"|sed 's|\*||g'|column -t|egrep "^${branch_name}"|egrep -w "${branch_name}"|awk '{print $3}'|sed 's|\[||g'|sed 's|\]||g'|awk -F'/' '{print $1}')
+    N1=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|wc -l)
+    if [ $N1 -gt 1 ];then
+        echo -e "+++++"
+        git remote -v
+        echo -e "+++++"
+        return 1
+    fi
+    remote=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|awk -F'/' '{print $2}')
     echo -e "+++++"
-    git remote -v|egrep "^${remote_name}"
+    git remote -v|egrep "^${remote}"
     echo -e "+++++"
+}
+function check_if_ahead()
+{
+    local branch_name="$1"
+    ahead_num=$(git status|egrep "is ahead of"|egrep -w -o "[0-9]+"|wc -l)
+    if [ $ahead_num -ge 1 ];then
+        if [ $color == "yes" ];then
+            clr_red "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
+        else
+            echo -e "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
+        fi
+    fi
 }
 
 if [ -f "rep_list" ];then
@@ -55,9 +74,7 @@ if [ -f "rep_list" ];then
         rep=$(echo $line|awk -F' ' '{print $1}')
         branchs=$(echo $line|awk -F' ' '{print $2}'|sed 's/,/ /g'|sed 's/"//')
         last_checkout_to_branch=$(echo $line|awk -F' ' '{print $3}')
-        if [ -d "$rep" ];then
-            cd $rep
-        else
+        if [ ! -d "$rep" ];then
             if [ $color == "yes" ];then
                 clr_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
             else
@@ -65,6 +82,7 @@ if [ -f "rep_list" ];then
             fi
             continue
         fi
+        cd $rep
         if [ ! -d ".git" ];then
             cd ..
             if [ $color == "yes" ];then
@@ -81,12 +99,9 @@ if [ -f "rep_list" ];then
             if [ $(check_branch_exist $i) = "yes" ];then
                 no_branch_match="no"
                 git checkout $i
-                date1=$(date +%s)
-                get_remote_info_by_branch_name $i
-                git pull 2>/dev/null
-                date2=$(date +%s)
-                time_used=$((date2-date1))
-                echo -e "-------- Pull for branch [$i] used time seconds: [$time_used] ---------\n"
+                check_if_ahead $i
+                git status
+                echo -e "------------------"
             else
                 echo -e "Continue cause branch [$i] not exist"
                 continue
@@ -97,16 +112,15 @@ if [ -f "rep_list" ];then
         fi
         if [ "$default_branch" != "no" ];then
             git checkout $default_branch
-            date1=$(date +%s)
-            git pull 2>/dev/null
-            date2=$(date +%s)
-            time_used=$((date2-date1))
-            echo -e "-------- Pull for branch [$default_branch] used time seconds: [$time_used] ---------\n"
+            check_if_ahead $i
+            git status
+            echo -e "-------------------"
         fi
         N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "$last_checkout_to_branch"|wc -l)
         if [ $N2 -eq 1 ];then
             echo -e "--- [checkout to $last_checkout_to_branch] ---"
             git checkout $last_checkout_to_branch
+            check_if_ahead $last_checkout_to_branch
         fi
         cd ..
     done < ./rep_list
@@ -127,7 +141,7 @@ do
         if [ $N -eq 1 ];then
             echo -e "=== checkout to $branch_name to update this branch $branch_name ==="
             git checkout $branch_name
-            git br -a
+            git branch -a
         else
             N1=$(git branch -a|egrep remote|column -t|egrep -w ${branch_name}|wc -l)
             if [ $N1 -eq 1 ];then
@@ -139,23 +153,19 @@ do
             fi
         fi
     fi
-    if [ "$branch_name" = "" ];then
-        default_branch=$(get_default_branch_if_need)
-        echo -e "--- git pulling for branch default_branch [$default_branch] ---"
-        get_remote_info_by_branch_name $default_branch
+    if [ "$branch_name" != "" ];then
+        check_if_ahead "$branch_name"
+        git status
     else
-        echo -e "--- git pulling for branch the_branch [$branch_name] ---"
-        get_remote_info_by_branch_name $branch_name
+        default_branch=$(get_default_branch_if_need)
+        check_if_ahead $default_branch
+        git status
     fi
-    git pull 2>/dev/null
-    date2=$(date +%s)
-    time_used=$((date2-date1))
     N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "dev"|wc -l)
     if [ $N2 -eq 1 ];then
         echo -e " ---- checkout to dev ----"
         git checkout dev
     fi
-    echo -e "===================================== Pull used time seconds: [$time_used] ===========================================\n"
     cd ..
 done
 
