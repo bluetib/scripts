@@ -20,7 +20,6 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.image import MIMEImage
 from os.path import join, getsize
-from operator import itemgetter as i
 from collections import OrderedDict
 import global_vars as vars
 from decimal import *
@@ -79,6 +78,7 @@ class FileLock(object):
             exceeds `timeout` number of seconds, in which case it raises an exception.
         """
         start_time = time.time()
+        wait_num = 0
         while True:
             try:
                 # Attempt to create the lockfile.
@@ -96,6 +96,8 @@ class FileLock(object):
                 if not blocking:
                     return False
                 time.sleep(self.delay)
+                wait_num += self.delay
+                print "I have wait for the lock for %s seconds" % wait_num
         self.is_locked = True
         return True
 
@@ -139,29 +141,55 @@ class FileLock(object):
             return True
         return False
 
-def lock_the_file(file_path,lock_file_con=None):
+def lock_the_file(file_path,lock_file_con=None,lock_timeout=30):
     if os.path.exists(file_path) is True:
         if lock_file_con:
-            lock_t = FileLock(file_path,lock_file_contents=lock_file_con)
+            lock_t = FileLock(file_path,lock_file_contents=lock_file_con,timeout=lock_timeout)
         else:
-            lock_t = FileLock(file_path)
+            lock_t = FileLock(file_path,timeout=lock_timeout)
         return lock_t
     else:
         return None
 
-def lock_the_file_and_touch(file_path,lock_file_con=None):
+def lock_the_file_and_touch(file_path,lock_file_con=None,lock_timeout=30):
     if os.path.exists(file_path) is True:
         if lock_file_con:
-            lock_t = FileLock(file_path,lock_file_contents=lock_file_con)
+            lock_t = FileLock(file_path,lock_file_contents=lock_file_con,timeout=lock_timeout)
         else:
-            lock_t = FileLock(file_path)
+            lock_t = FileLock(file_path,timeout=lock_timeout)
         return lock_t
     else:
-        a,b = os.path.split(file_path)
-        mk_dir_if_not_exist(a)
-        touch('''%s%s%s''' % (a,os.path.sep,b))
-        lock_t = FileLock(file_path)
+        file_abs_path = get_file_abs_path(file_path)
+        mk_dir_if_not_exist(file_abs_path)
+        touch('''%s''' % file_abs_path)
+        lock_t = FileLock(file_path,timeout=lock_timeout)
         return lock_t
+
+def check_lock_num_and_delete(fl_obj,check_num=5,the_log_obj=None):
+    check_file = fl_obj.lockfile
+    check_lock_num_file = "%s.num" % check_file
+    if os.path.exists(check_file) is True:
+        if os.path.exists(check_lock_num_file) is True:
+            N = int(open(check_lock_num_file).read())
+            if N >= check_num:
+                with open(check_lock_num_file,"w+") as f:
+                    f.write("0\n")
+                os.unlink(check_file)
+                if the_log_obj:
+                    the_log_obj.write_run("I need to delete the lock file [%s] cause now it's bigger than %s" % (check_file,check_num),2)
+                    the_log_obj.write_run("""write 0 to check_lock_file [%s]""" % check_lock_num_file,2)
+            else:
+                N += 1
+                with open(check_lock_num_file,"w+") as f:
+                    f.write("%s\n" % N)
+                if the_log_obj:
+                    the_log_obj.write_run("no need to delete the lock file [%s]" % check_file,2)
+                    the_log_obj.write_run("""write %s to check_lock_file [%s] """ % (N,check_lock_num_file),2)
+        else:
+            with open(check_lock_num_file,"w+") as f:
+                f.write("0\n")
+            if the_log_obj:
+                the_log_obj.write_run("""write 0 to check_lock_file [%s] """ % check_lock_num_file,2)
 
 def _decode_list(data):
     rv = []
@@ -341,6 +369,13 @@ def get_monday_to_sunday():
         the_first = get_the_one_date(b,"-")
     return (the_first,the_last)
 
+def get_monday_to_sunday_with_everyday():
+    ff = []
+    for i in range(7):
+        d = convert_datetime_to_string(get_monday_to_sunday()[0] + datetime.timedelta(days=i),default_list=False,only_date=True)
+        ff.append(d)
+    return ff
+
 def get_this_month_first_day_to_last():
     date1 = datetime.datetime.now()
     y=date1.year
@@ -351,6 +386,17 @@ def get_this_month_first_day_to_last():
     else:
         month_end_dt = datetime.datetime(y,m+1,1) - datetime.timedelta(days=1)
     return (month_start_dt,month_end_dt)
+
+def get_this_month_first_day_to_last_with_everyday():
+    ff = []
+    for i in range(31):
+        d = convert_datetime_to_string(get_this_month_first_day_to_last()[0] + datetime.timedelta(days=i),default_list=False,only_date=True)
+        if d == convert_datetime_to_string(get_this_month_first_day_to_last()[1],default_list=False,only_date=True):
+            ff.append(d)
+            break
+        else:
+            ff.append(d)
+    return ff
 
 def get_this_quarter_first_day_and_last_day():
     date1 = datetime.datetime.now()
@@ -420,10 +466,18 @@ def get_the_date_of_last_with_today(days,out_string=False):
     else:
         return date_list
 
-def convert_datetime_to_string(datetime_obj_list):
+def convert_datetime_to_string(datetime_obj_list,default_list=True,only_date=False):
     ret = []
+    if default_list is not True:
+        if only_date:
+            return datetime_obj_list.strftime("%Y-%m-%d")
+        else:
+            return datetime_obj_list.strftime("%Y-%m-%d %H:%M:%S")
     for i in datetime_obj_list:
-        ret.append(i.strftime("%Y-%m-%d %H:%M:%S"))
+        if only_date:
+            ret.append(i.strftime("%Y-%m-%d"))
+        else:
+            ret.append(i.strftime("%Y-%m-%d %H:%M:%S"))
     return ret
 
 def get_the_one_date(num,choice):
@@ -453,9 +507,12 @@ if os.path.exists("/tmp/all_ip_with_location.txt") is True:
     f = open("/tmp/all_ip_with_location.txt","r")
     all_ip_location_list = f.read().splitlines()
     f.close()
+else:
+    all_ip_location_list = []
 
 def check_ip_location_if_in_local_file(all_ip_info,check_ip):
     _all_ip = all_ip_info
+    i = ""
     for i in _all_ip:
         if i.split(':')[0].strip() == check_ip.strip():
             return (10,i)
@@ -808,15 +865,33 @@ def multikeysort(dic, columns):
         return next((result for result in comparer_iter if result), 0)
     return sorted(dic.items, cmp=comparer)
 
-def sort_dic_by_key_or_value_only_one_key_and_one_value(ori_dic,sort_by="key"):
+def sort_dict_return_OrderedDict(ori_dic,sort_by="key"):
     try:
+        new_dic = OrderedDict()
         import operator
-        ori_dic
         if sort_by == "key":
             sorted_x = sorted(ori_dic.items(), key=operator.itemgetter(0))
         else:
             sorted_x = sorted(ori_dic.items(), key=operator.itemgetter(1))
-        return sorted_x
+        for i in sorted_x:
+            new_dic[i[0]] = i[1]
+        return new_dic
+    except:
+        return ori_dic
+
+def sort_dict_by_key_return_OrderedDict(ori_dic,reverse=False,key_is_num=False):
+    try:
+        new_dic = OrderedDict()
+        import operator
+        sorted_x = sorted(ori_dic.items(), key=operator.itemgetter(0))
+        if reverse:
+            sorted_x.reverse()
+        for i in sorted_x:
+            if key_is_num:
+                new_dic[int(i[0])] = i[1]
+            else:
+                new_dic[i[0]] = i[1]
+        return new_dic
     except:
         return ori_dic
 
@@ -848,7 +923,10 @@ def write_to_file_with_tmp_file(last_file,content,is_list=False):
     os.rename(tmp_file,last_file)
 
 def hasNumbers(inputString):
-    return any(char.isdigit() for char in inputString)
+    return any(char.isdigit() for char in str(inputString))
+
+def allNumbers(inputString):
+    return all(char.isdigit() for char in str(inputString))
 
 def get_all_disk_of_this_machine():
     ret = run_shell_command("ls -al /dev/disk/by-id/ata*|awk -F'/' '{print $NF}'|sort -V")
@@ -932,9 +1010,6 @@ def check_requests_version():
     except Exception as e:
         return "ERROR when import requests module."
 
-def hasNumber(inputString):
-    return any(char.isdigit() for char in inputString)
-
 def time_to_sec(time_str):
     if len(time_str.split(":")) == 2:
         h, m = time_str.split(':')
@@ -952,6 +1027,33 @@ def time_to_sec(time_str):
     if str(s) == "":
         s = 0
     return int(h) * 3600 + int(m) * 60 + int(s)
+
+def aggregate_dic_by_keystring(the_dic,N=6):
+    new_dic = OrderedDict()
+    #the_dic = _decode_dict(the_dic)
+    for k,v in the_dic.items():
+        if new_dic == {}:
+            if allNumbers(v):
+                new_dic[k] = v
+            else:
+                new_dic[k] = 1
+            continue
+        else:
+            #new_dic = _decode_dict(new_dic)
+            for k1,v1 in new_dic.items():
+                if k.startswith(k1) or k1[:N] == k[:N] or k1.startswith(k) or k1 in k or k in k1:
+                    join = "yes"
+                    break
+                else:
+                    join = "no"
+            if join == "yes":
+                new_dic[k1] += 1
+            else:
+                if allNumbers(v):
+                    new_dic[k] = v
+                else:
+                    new_dic[k] = 1
+    return new_dic
 
 def deal_sys_encoding():
     import sys
@@ -975,6 +1077,16 @@ def read_json_from_file(file_path):
         else:
             return open(file_path).read().strip().strip("\n")
 
+def read_json_from_file_return_dic(file_path):
+    file_path = str(file_path).strip()
+    if os.path.exists(file_path) is not True:
+        return "{}"
+    else:
+        if os.path.getsize(file_path) == 0 or str(open(file_path).read().strip("\n")) == "{}":
+            return "{}"
+        else:
+            return json.loads(open(file_path).read().strip().replace("\n",""),strict=False)
+
 def get_file_abs_path_two_part(rel_path):
     try:
         if os.path.exists(rel_path) is True:
@@ -987,6 +1099,10 @@ def get_file_abs_path(rel_path):
     try:
         if os.path.exists(rel_path) is True:
             abs_path,file_name = os.path.split(os.path.realpath(os.path.expanduser(rel_path)))
+            return "%s%s%s" % (abs_path,os.path.sep,file_name)
+        else:
+            abs_path = os.path.realpath(os.path.expanduser(os.path.split(rel_path)[0]))
+            file_name = os.path.split(rel_path)[1]
             return "%s%s%s" % (abs_path,os.path.sep,file_name)
     except Exception as e:
         return False
@@ -1088,6 +1204,98 @@ def get_time_formated(choice,with_space=True,with_T=False):
             else:
                 return None
 
+def get_time_formated_2(choice,with_space=True,with_T=False):
+    if with_T:
+        if int(str(choice).lower().strip()) == 11:
+            return "%sT%s" % (vars.CURR_DATE_1,vars.CURR_TIME_1)
+        elif int(str(choice).lower().strip()) == 12:
+            return "%sT%s" % (vars.CURR_DATE_1,vars.CURR_TIME_2)
+        elif int(str(choice).lower().strip()) == 13:
+            return "%sT%s" % (vars.CURR_DATE_1,vars.CURR_TIME_3)
+        elif int(str(choice).lower().strip()) == 14:
+            return "%sT%s" % (vars.CURR_DATE_1,vars.CURR_TIME_4)
+        elif int(str(choice).lower().strip()) == 21:
+            return "%sT%s" % (vars.CURR_DATE_2,vars.CURR_TIME_1)
+        elif int(str(choice).lower().strip()) == 22:
+            return "%sT%s" % (vars.CURR_DATE_2,vars.CURR_TIME_2)
+        elif int(str(choice).lower().strip()) == 23:
+            return "%sT%s" % (vars.CURR_DATE_2,vars.CURR_TIME_3)
+        elif int(str(choice).lower().strip()) == 24:
+            return "%sT%s" % (vars.CURR_DATE_2,vars.CURR_TIME_4)
+        elif int(str(choice).lower().strip()) == 31:
+            return "%sT%s" % (vars.CURR_DATE_3,vars.CURR_TIME_1)
+        elif int(str(choice).lower().strip()) == 32:
+            return "%sT%s" % (vars.CURR_DATE_3,vars.CURR_TIME_2)
+        elif int(str(choice).lower().strip()) == 33:
+            return "%sT%s" % (vars.CURR_DATE_3,vars.CURR_TIME_3)
+        elif int(str(choice).lower().strip()) == 34:
+            return "%sT%s" % (vars.CURR_DATE_3,vars.CURR_TIME_4)
+        else:
+            return None
+    else:
+        if with_space:
+            if int(str(choice).lower().strip()) == 11:
+                return "%s %s" % (vars.CURR_DATE_1,vars.CURR_TIME_1)
+            elif int(str(choice).lower().strip()) == 12:
+                return "%s %s" % (vars.CURR_DATE_1,vars.CURR_TIME_2)
+            elif int(str(choice).lower().strip()) == 13:
+                return "%s %s" % (vars.CURR_DATE_1,vars.CURR_TIME_3)
+            elif int(str(choice).lower().strip()) == 14:
+                return "%s %s" % (vars.CURR_DATE_1,vars.CURR_TIME_4)
+            elif int(str(choice).lower().strip()) == 21:
+                return "%s %s" % (vars.CURR_DATE_2,vars.CURR_TIME_1)
+            elif int(str(choice).lower().strip()) == 22:
+                return "%s %s" % (vars.CURR_DATE_2,vars.CURR_TIME_2)
+            elif int(str(choice).lower().strip()) == 23:
+                return "%s %s" % (vars.CURR_DATE_2,vars.CURR_TIME_3)
+            elif int(str(choice).lower().strip()) == 24:
+                return "%s %s" % (vars.CURR_DATE_2,vars.CURR_TIME_4)
+            elif int(str(choice).lower().strip()) == 31:
+                return "%s %s" % (vars.CURR_DATE_3,vars.CURR_TIME_1)
+            elif int(str(choice).lower().strip()) == 32:
+                return "%s %s" % (vars.CURR_DATE_3,vars.CURR_TIME_2)
+            elif int(str(choice).lower().strip()) == 33:
+                return "%s %s" % (vars.CURR_DATE_3,vars.CURR_TIME_3)
+            elif int(str(choice).lower().strip()) == 34:
+                return "%s %s" % (vars.CURR_DATE_3,vars.CURR_TIME_4)
+            elif int(str(choice).lower().strip()) == 41:
+                return "%s %s" % (vars.CURR_DATE_4,vars.CURR_TIME_1)
+            elif int(str(choice).lower().strip()) == 42:
+                return "%s %s" % (vars.CURR_DATE_4,vars.CURR_TIME_2)
+            elif int(str(choice).lower().strip()) == 43:
+                return "%s %s" % (vars.CURR_DATE_4,vars.CURR_TIME_3)
+            elif int(str(choice).lower().strip()) == 44:
+                return "%s %s" % (vars.CURR_DATE_4,vars.CURR_TIME_4)
+            else:
+                return None
+        else:
+            if int(str(choice).lower().strip()) == 11:
+                return "%s%s" % (vars.CURR_DATE_1,vars.CURR_TIME_1)
+            elif int(str(choice).lower().strip()) == 12:
+                return "%s%s" % (vars.CURR_DATE_1,vars.CURR_TIME_2)
+            elif int(str(choice).lower().strip()) == 13:
+                return "%s%s" % (vars.CURR_DATE_1,vars.CURR_TIME_3)
+            elif int(str(choice).lower().strip()) == 14:
+                return "%s%s" % (vars.CURR_DATE_1,vars.CURR_TIME_4)
+            elif int(str(choice).lower().strip()) == 21:
+                return "%s%s" % (vars.CURR_DATE_2,vars.CURR_TIME_1)
+            elif int(str(choice).lower().strip()) == 22:
+                return "%s%s" % (vars.CURR_DATE_2,vars.CURR_TIME_2)
+            elif int(str(choice).lower().strip()) == 23:
+                return "%s%s" % (vars.CURR_DATE_2,vars.CURR_TIME_3)
+            elif int(str(choice).lower().strip()) == 24:
+                return "%s%s" % (vars.CURR_DATE_2,vars.CURR_TIME_4)
+            elif int(str(choice).lower().strip()) == 31:
+                return "%s%s" % (vars.CURR_DATE_3,vars.CURR_TIME_1)
+            elif int(str(choice).lower().strip()) == 32:
+                return "%s%s" % (vars.CURR_DATE_3,vars.CURR_TIME_2)
+            elif int(str(choice).lower().strip()) == 33:
+                return "%s%s" % (vars.CURR_DATE_3,vars.CURR_TIME_3)
+            elif int(str(choice).lower().strip()) == 34:
+                return "%s%s" % (vars.CURR_DATE_3,vars.CURR_TIME_4)
+            else:
+                return None
+
 def check_process_running(name):
     cmd_string = '''ps -e faux|egrep -i -w "%s"|egrep -v grep|wc -l''' % name
     number = get_shell_cmd_output(cmd_string)
@@ -1108,15 +1316,201 @@ def cal_fu_li(money,rate,year):
         money = sum
     return str(sum)
 
-def get_the_day_of_week():
-    today = datetime.datetime.today()
+def get_the_day_of_week(the_datetime=None):
+    if the_datetime:
+        today = the_datetime
+    else:
+        today = datetime.datetime.today()
     day_num = today.isoweekday()
     day_name = calendar.day_name[today.weekday()]
     return ('''%s,%s''' % (day_num,day_name))
 
+def get_string_between_list_two_keys(first_key,second_key,the_list,default_choice=1,sep_str=" "):
+    '''
+        可以获取到list中的一段数据，可以根据2个关键字来截取
+    '''
+    _ret_list = []
+    _ret_list_2 = []
+    the_list = _decode_list(the_list)
+    begin = 0
+    end = 0
+    shit = 0
+    all_string = ""
+    for love in range(len(the_list)):
+        if str(the_list[love]).startswith(first_key):
+            begin = love + 1
+            continue
+        if str(the_list[love]).startswith(second_key):
+            if begin == 0:
+                continue
+            end = love
+            _ret_list_2.append((begin,end))
+            begin = 0
+            end = 0
+    if default_choice == "all":
+        for ak in _ret_list_2:
+            t_1 = sep_str.join([str(ok) for ok in the_list[ak[0]:ak[1]]])
+            all_string += t_1
+            all_string += sep_str
+    else:
+        for i in range(int(default_choice)):
+            first = _ret_list_2[i][0]
+            second = _ret_list_2[i][1]
+            t_2 = sep_str.join([str(ok) for ok in the_list[first:second]])
+            all_string += t_2
+            all_string += sep_str
+    return all_string.lstrip(sep_str).rstrip(sep_str)
+
+#   for k range(default_choice):
+#       for i in range(len(the_list)):
+#           if str(the_list[i]).startswith(first_key):
+#               if i == shit:
+#                   continue
+#               begin = i
+#               break
+#       if begin == "":
+#           return ""
+#       for j in range(len(the_list)):
+#           if str(the_list[j]).startswith(second_key):
+#               if j < begin:
+#                   continue
+#               else:
+#                   end = j
+#                   break
+#       _ret_list.append((begin+1,end))
+#       shit = shit + 1
+#       begin = ""
+#       end = ""
+#   for se in _ret_list:
+#       t_str = sep_str.join([str(ak) for ak in the_list[se[0]:se[1]]])
+#       _ret_list_2.append(t_str)
+#   return sep_str.join(_ret_list_2)
+
+def get_string_between_list_two_keys_not_starts(first_key,second_key,the_list,default_choice=1,sep_str=" "):
+    '''
+        可以获取到list中的一段数据，可以根据2个关键字来截取，关键key可以不用是开头的^key
+    '''
+    _ret_list = []
+    _ret_list_2 = []
+    the_list = _decode_list(the_list)
+    begin = 0
+    end = 0
+    shit = 0
+    all_string = ""
+    for love in range(len(the_list)):
+        if first_key in str(the_list[love]):
+            begin = love + 1
+            continue
+        if second_key in str(the_list[love]):
+            if begin == 0:
+                continue
+            end = love
+            _ret_list_2.append((begin,end))
+            begin = 0
+            end = 0
+    if default_choice == "all":
+        for ak in _ret_list_2:
+            t_1 = sep_str.join([str(ok) for ok in the_list[ak[0]:ak[1]]])
+            all_string += t_1
+            all_string += sep_str
+    else:
+        for i in range(int(default_choice)):
+            first = _ret_list_2[i][0]
+            second = _ret_list_2[i][1]
+            t_2 = sep_str.join([str(ok) for ok in the_list[first:second]])
+            all_string += t_2
+            all_string += sep_str
+    return all_string.lstrip(sep_str).rstrip(sep_str)
+
+#   for k range(default_choice):
+#       for i in range(len(the_list)):
+#           if str(the_list[i]).startswith(first_key):
+#               if i == shit:
+#                   continue
+#               begin = i
+#               break
+#       if begin == "":
+#           return ""
+#       for j in range(len(the_list)):
+#           if str(the_list[j]).startswith(second_key):
+#               if j < begin:
+#                   continue
+#               else:
+#                   end = j
+#                   break
+#       _ret_list.append((begin+1,end))
+#       shit = shit + 1
+#       begin = ""
+#       end = ""
+#   for se in _ret_list:
+#       t_str = sep_str.join([str(ak) for ak in the_list[se[0]:se[1]]])
+#       _ret_list_2.append(t_str)
+#   return sep_str.join(_ret_list_2)
+
+def convert_timestring_to_time(time_string,choice=1):
+    if choice == 1:
+        return time.strptime("%s" % str(time_string).strip(),'%Y-%m-%d %H:%M:%S')
+    elif choice == 2:
+        return time.strptime("%s" % str(time_string).strip(),'%Y%m%d %H:%M:%S')
+    elif choice == 3:
+        return time.strptime("%s" % str(time_string).strip(),'%Y_%m_%d %H:%M:%S')
+    elif choice == 4:
+        return time.strptime("%s" % str(time_string).strip(),'%Y_%m_%d %H_%M_%S')
+    elif choice == 5:
+        return time.strptime("%s" % str(time_string).strip(),'%Y-%m-%d %H-%M-%S')
+    elif choice == 6:
+        return time.strptime("%s" % str(time_string).strip(),'%Y%m%d%H%M%S')
+
+def is_time_between(start_time,end_time,the_time):
+    start = convert_timestring_to_time(start_time)
+    end = convert_timestring_to_time(end_time)
+    t_time = convert_timestring_to_time(the_time)
+    if start <= t_time <= end:
+        return True
+    else:
+        return False
+
+def get_the_right_time_format(num=1):
+    HOUR = vars.NOW_TIME.split()[1].split(":")[0]
+    MINUTE = vars.NOW_TIME.split()[1].split(":")[1]
+    TIME = vars.NOW_TIME
+    TIME_2 = "%s %s" % (vars.NOW_TIME_2.split()[0],vars.NOW_TIME_2.split()[1])
+    TIME_3 = "%s" % funcs.get_time_formated_2(33)
+    if int(HOUR) >= 1 and int(HOUR) <= 23:
+        if int(MINUTE) == 0:
+            HOUR = int(HOUR) - 1
+            if len(str(HOUR)) == 1:
+                HOUR = "0%s" % str(HOUR)
+            MINUTE = "59"
+        else:
+            MINUTE = int(MINUTE) - 1
+            if len(str(MINUTE)) == 1:
+                MINUTE = "0%s" % str(MINUTE)
+        if int(num) == 1:
+            result_time = "%sT%s:%s" % (TIME.split()[0],HOUR,MINUTE)
+        elif int(num) == 2:
+            result_time = "%s %s:%s" % (TIME_2,HOUR,MINUTE)
+    else:
+        if int(MINUTE) == 0:
+            if int(num) == 1:
+                result_time = "%sT%s:%s" % (vars.YESTERDAY,"23","59")
+            elif int(num) == 2:
+                result_time = "%s %s:%s" % (vars.YESTERDAY,"23","59")
+        else:
+            MINUTE = int(MINUTE) - 1
+            if len(str(MINUTE)) == 1:
+                MINUTE = "0%s" % str(MINUTE)
+            HOUR = "00"
+            if int(num) == 1:
+                result_time = "%sT%s:%s" % (TIME.split()[0],HOUR,MINUTE)
+            elif int(num) == 2:
+                result_time = "%s %s:%s" % (TIME_2,HOUR,MINUTE)
+    return result_time
 #################################################################################
 
 if __name__ == '__main__':
+    print sort_dict_by_key_return_OrderedDict({"2":{"22":22,55:55,11:1,1:2},"4":{"22":22,55:55,9:1,5:1},"1":{111:22,33:22,4:4}})
+    print sort_dict_only_one_key_and_one_value_return_OrderedDict({"5":{2:2},"4":{1:"0"},"1":{1:3}},sort_by="value")
     print cal_fu_li(1,200,10)
     #a = "2.3.4.5"
     #str_1 = "2#?3TvP?C;B2fjwfF@"
@@ -1144,3 +1538,4 @@ if __name__ == '__main__':
     color_print("Hello",color="green")
     color_print("Hello",color="title")
     color_print("Hello",color="info")
+

@@ -14,6 +14,7 @@ except ImportError,e:
 CURR_DATE_YEAR = time.strftime("%Y")
 CURR_DATE_MONTH = time.strftime("%m")
 CURR_DATE_DAY = time.strftime("%d")
+CURR_DATE_MONTH_2 = time.strftime("%b")
 
 CURR_DATE_1 = time.strftime("%Y_%m_%d")
 CURR_DATE_2 = time.strftime("%Y-%m-%d")
@@ -26,6 +27,7 @@ CURR_TIME_3 = time.strftime("%H%M%S")
 CURR_TIME_4 = time.strftime("%H:%M:%S")
 
 NOW_TIME = "%s %s" % (CURR_DATE_2,CURR_TIME_4)
+NOW_TIME_2 = "%s %s %s" % (CURR_DATE_MONTH_2,CURR_DATE_DAY,CURR_TIME_4)
 
 TODAY = datetime.date.today()
 ONEDAY = datetime.timedelta(days=1)

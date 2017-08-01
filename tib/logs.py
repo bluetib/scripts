@@ -106,6 +106,8 @@ class log2:
         else:
             rlog_path = os.path.split(logs[0])[0]
             elog_path = os.path.split(logs[0])[0]
+            rlog_path = my_func.get_file_abs_path(rlog_path)
+            elog_path = my_func.get_file_abs_path(elog_path)
             log_filename = os.path.split(logs[0])[1]
             self.rlog = "%s/log/%s/right_%s" % (rlog_path,vars.CURR_DATE_2,log_filename)
             self.elog = "%s/log/%s/error_%s" % (elog_path,vars.CURR_DATE_2,log_filename)
