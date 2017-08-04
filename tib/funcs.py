@@ -562,7 +562,7 @@ def get_ip_from_domain(www):
     if re_domain.match(www):
         result = socket.getaddrinfo(www, None)
         ip_address = result[0][4][0]
-        return ip_addre
+        return ip_address
     else:
         raise SystemError,"The domain %s is wrong" % www
         sys.exit()
