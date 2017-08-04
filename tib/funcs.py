@@ -1506,11 +1506,20 @@ def get_the_right_time_format(num=1):
             elif int(num) == 2:
                 result_time = "%s %s:%s" % (TIME_2,HOUR,MINUTE)
     return result_time
+
+def print_for_show(msg,choice=2):
+    try:
+        length = 2 ** int(choice)
+        line = "-" * length
+    except:
+        length = 4
+        line = "-" * length
+    print line
+    print str(msg).strip()
+    print line + "\n"
 #################################################################################
 
 if __name__ == '__main__':
-    print sort_dict_by_key_return_OrderedDict({"2":{"22":22,55:55,11:1,1:2},"4":{"22":22,55:55,9:1,5:1},"1":{111:22,33:22,4:4}})
-    print sort_dict_only_one_key_and_one_value_return_OrderedDict({"5":{2:2},"4":{1:"0"},"1":{1:3}},sort_by="value")
     print cal_fu_li(1,200,10)
     #a = "2.3.4.5"
     #str_1 = "2#?3TvP?C;B2fjwfF@"
