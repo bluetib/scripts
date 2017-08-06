@@ -1080,10 +1080,10 @@ def read_json_from_file(file_path):
 def read_json_from_file_return_dic(file_path):
     file_path = str(file_path).strip()
     if os.path.exists(file_path) is not True:
-        return "{}"
+        return {}
     else:
         if os.path.getsize(file_path) == 0 or str(open(file_path).read().strip("\n")) == "{}":
-            return "{}"
+            return {}
         else:
             return json.loads(open(file_path).read().strip().replace("\n",""),strict=False)
 
