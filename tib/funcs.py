@@ -562,7 +562,7 @@ def get_ip_from_domain(www):
     if re_domain.match(www):
         result = socket.getaddrinfo(www, None)
         ip_address = result[0][4][0]
-        return ip_addre
+        return ip_address
     else:
         raise SystemError,"The domain %s is wrong" % www
         sys.exit()
@@ -1080,10 +1080,10 @@ def read_json_from_file(file_path):
 def read_json_from_file_return_dic(file_path):
     file_path = str(file_path).strip()
     if os.path.exists(file_path) is not True:
-        return "{}"
+        return {}
     else:
         if os.path.getsize(file_path) == 0 or str(open(file_path).read().strip("\n")) == "{}":
-            return "{}"
+            return {}
         else:
             return json.loads(open(file_path).read().strip().replace("\n",""),strict=False)
 
@@ -1506,11 +1506,20 @@ def get_the_right_time_format(num=1):
             elif int(num) == 2:
                 result_time = "%s %s:%s" % (TIME_2,HOUR,MINUTE)
     return result_time
+
+def print_for_show(msg,choice=2):
+    try:
+        length = 2 ** int(choice)
+        line = "-" * length
+    except:
+        length = 4
+        line = "-" * length
+    print line
+    print str(msg).strip()
+    print line + "\n"
 #################################################################################
 
 if __name__ == '__main__':
-    print sort_dict_by_key_return_OrderedDict({"2":{"22":22,55:55,11:1,1:2},"4":{"22":22,55:55,9:1,5:1},"1":{111:22,33:22,4:4}})
-    print sort_dict_only_one_key_and_one_value_return_OrderedDict({"5":{2:2},"4":{1:"0"},"1":{1:3}},sort_by="value")
     print cal_fu_li(1,200,10)
     #a = "2.3.4.5"
     #str_1 = "2#?3TvP?C;B2fjwfF@"

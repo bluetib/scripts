@@ -10,5 +10,5 @@ echo -e "=========================== GIT status ================================
 git status
 echo
 echo -e "=========================== GIT log 10 ====================================="
-git log --color --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit |head -10
+git log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit |head -10
 echo

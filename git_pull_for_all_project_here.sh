@@ -83,7 +83,11 @@ if [ -f "rep_list" ];then
                 git checkout $i
                 date1=$(date +%s)
                 get_remote_info_by_branch_name $i
-                git pull 2>/dev/null
+                if [ "$rep" == "all_sls" ];then
+                    git pull --ff 2>/dev/null
+                else
+                    git pull 2>/dev/null
+                fi
                 date2=$(date +%s)
                 time_used=$((date2-date1))
                 echo -e "-------- Pull for branch [$i] used time seconds: [$time_used] ---------\n"
@@ -98,7 +102,11 @@ if [ -f "rep_list" ];then
         if [ "$default_branch" != "no" ];then
             git checkout $default_branch
             date1=$(date +%s)
-            git pull 2>/dev/null
+            if [ "$rep" == "all_sls" ];then
+                git pull --ff 2>/dev/null
+            else
+                git pull 2>/dev/null
+            fi
             date2=$(date +%s)
             time_used=$((date2-date1))
             echo -e "-------- Pull for branch [$default_branch] used time seconds: [$time_used] ---------\n"
