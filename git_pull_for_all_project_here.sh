@@ -9,12 +9,21 @@ else
     branch_name=""
 fi
 
-if [ -f "/usr/local/bin/funcs.sh" ];then
-    . /usr/local/bin/funcs.sh
+if [ -f "/usr/local/bin/color.sh" ];then
+    . /usr/local/bin/color.sh
     color="yes"
 else
     color="no"
 fi
+
+function color_echo_red()
+{
+    if [ "$color" == "yes" ];then
+        clr_red "$*"
+    else
+        echo -e "$*"
+    fi
+}
 
 function check_branch_exist()
 {
@@ -59,7 +68,7 @@ if [ -f "rep_list" ];then
             cd $rep
         else
             if [ $color == "yes" ];then
-                clr_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
+                color_echo_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
             else
                 echo -e " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
             fi
@@ -68,7 +77,7 @@ if [ -f "rep_list" ];then
         if [ ! -d ".git" ];then
             cd ..
             if [ $color == "yes" ];then
-                clr_red " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
+                color_echo_red " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
             else
                 echo -e " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
             fi
