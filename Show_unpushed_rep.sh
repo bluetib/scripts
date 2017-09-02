@@ -114,7 +114,7 @@ if [ -f "rep_list" ];then
                 git status
                 echo -e "------------------"
             else
-                echo -e "Continue cause branch [$i] not exist"
+                color_echo_red "Continue cause branch [$i] not exist"
                 continue
             fi
         done
