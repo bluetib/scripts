@@ -107,18 +107,18 @@ if [ -f "rep_list" ];then
         done
         if [ "$no_branch_match" == "yes" ];then
             default_branch=$(get_default_branch_if_need)
-        fi
-        if [ "$default_branch" != "no" ];then
-            git checkout $default_branch
-            date1=$(date +%s)
-            if [ "$rep" == "all_sls" ];then
-                git pull --ff 2>/dev/null
-            else
-                git pull 2>/dev/null
+            if [ "$default_branch" != "no" ];then
+                git checkout $default_branch
+                date1=$(date +%s)
+                if [ "$rep" == "all_sls" ];then
+                    git pull --ff 2>/dev/null
+                else
+                    git pull 2>/dev/null
+                fi
+                date2=$(date +%s)
+                time_used=$((date2-date1))
+                echo -e "-------- Pull for branch [$default_branch] used time seconds: [$time_used] ---------\n"
             fi
-            date2=$(date +%s)
-            time_used=$((date2-date1))
-            echo -e "-------- Pull for branch [$default_branch] used time seconds: [$time_used] ---------\n"
         fi
         N2=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w "$last_checkout_to_branch"|wc -l)
         if [ $N2 -eq 1 ];then
@@ -156,7 +156,7 @@ do
             fi
         fi
     fi
-    if [ "$branch_name" = "" ];then
+    if [ "$branch_name" == "" ];then
         default_branch=$(get_default_branch_if_need)
         echo -e "--- git pulling for branch default_branch [$default_branch] ---"
         get_remote_info_by_branch_name $default_branch
