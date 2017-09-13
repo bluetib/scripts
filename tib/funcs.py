@@ -249,6 +249,8 @@ def mk_dir_if_not_exist(path):
     uid = os.getuid()
     gid = os.getgid()
     dir_path = os.path.split(path)[0]
+    if dir_path in ["","."]:
+        dir_path = os.path.split(path)[1]
     if os.path.exists(dir_path) is not True:
         os.makedirs(dir_path)
         os.chown(dir_path,uid,gid)
@@ -1475,7 +1477,7 @@ def get_the_right_time_format(num=1):
     MINUTE = vars.NOW_TIME.split()[1].split(":")[1]
     TIME = vars.NOW_TIME
     TIME_2 = "%s %s" % (vars.NOW_TIME_2.split()[0],vars.NOW_TIME_2.split()[1])
-    TIME_3 = "%s" % funcs.get_time_formated_2(33)
+    TIME_3 = "%s" % get_time_formated_2(33)
     if int(HOUR) >= 1 and int(HOUR) <= 23:
         if int(MINUTE) == 0:
             HOUR = int(HOUR) - 1
@@ -1517,6 +1519,23 @@ def print_for_show(msg,choice=2):
     print line
     print str(msg).strip()
     print line + "\n"
+
+def get_zabbix_check_file_path(file_name,the_log):
+    try:
+        ori_path = os.getcwd()
+        import sys
+        cd_into_cwd_dir(sys.argv[0])
+        if os.path.exists("zabbix_check") is not True:
+            mk_dir_if_not_exist("zabbix_check")
+        if os.path.isdir("zabbix_check") is not True:
+            get_shell_cmd_output("mv zabbix_check zabbix_check_bak")
+            mk_dir_if_not_exist("zabbix_check")
+        the_full_path = "%s%s%s%s%s" % (os.getcwd(),os.sep,"zabbix_check",os.sep,str(file_name).strip())
+        os.chdir(ori_path)
+        return the_full_path
+    except:
+        traceback_to_file(the_log)
+
 #################################################################################
 
 if __name__ == '__main__':
