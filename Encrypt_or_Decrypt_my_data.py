@@ -518,6 +518,8 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
                 encrypt_or_decrypt(cipher_obj,"%s" % i,0,force_update="no")
                 self.response_dic['%s' % self.id]['before'] = "%s" % i
                 self.response_dic['%s' % self.id]['after'] = "%s" % i.replace(".locked","")
+                kb = zipfile.ZipFile(self.response_dic['%s' % self.id]['after'])
+                kb.extractall(os.path.split(self.response_dic['%s' % self.id]['after'])[0])
         end_time = time.time()
         self.response_dic['%s' % self.id]['time_used'] = int(end_time) - int(begin_time)
         self.queue.task_done()
@@ -577,6 +579,8 @@ class do_encrypt_or_decrypt_win(threading.Thread):
                 encrypt_or_decrypt(cipher_obj,"%s" % i,0,force_update="no")
                 self.response_dic['%s' % self.id]['before'] = "%s" % i.decode("GB2312").encode("utf-8")
                 self.response_dic['%s' % self.id]['after'] = "%s" % i.replace(".locked","").decode("GB2312").encode("utf-8")
+                kb = zipfile.ZipFile(self.response_dic['%s' % self.id]['after'])
+                kb.extractall(os.path.split(self.response_dic['%s' % self.id]['after'])[0])
         end_time = time.time()
         self.response_dic['%s' % self.id]['time_used'] = int(end_time) - int(begin_time)
         self.queue.task_done()
