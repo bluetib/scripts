@@ -249,6 +249,8 @@ def mk_dir_if_not_exist(path):
     uid = os.getuid()
     gid = os.getgid()
     dir_path = os.path.split(path)[0]
+    if dir_path in ["","."]:
+        dir_path = os.path.split(path)[1]
     if os.path.exists(dir_path) is not True:
         os.makedirs(dir_path)
         os.chown(dir_path,uid,gid)
@@ -943,6 +945,7 @@ def get_all_disk_of_this_machine():
         return ""
 
 def human(num, power="Ki"):
+    num = int(num)
     powers = ["Ki", "Mi", "Gi", "Ti"]
     while num >= 1000: #4 digits
         num /= 1024.0
@@ -1475,7 +1478,7 @@ def get_the_right_time_format(num=1):
     MINUTE = vars.NOW_TIME.split()[1].split(":")[1]
     TIME = vars.NOW_TIME
     TIME_2 = "%s %s" % (vars.NOW_TIME_2.split()[0],vars.NOW_TIME_2.split()[1])
-    TIME_3 = "%s" % funcs.get_time_formated_2(33)
+    TIME_3 = "%s" % get_time_formated_2(33)
     if int(HOUR) >= 1 and int(HOUR) <= 23:
         if int(MINUTE) == 0:
             HOUR = int(HOUR) - 1
@@ -1517,6 +1520,51 @@ def print_for_show(msg,choice=2):
     print line
     print str(msg).strip()
     print line + "\n"
+
+def get_zabbix_check_file_path(file_name,the_log):
+    try:
+        ori_path = os.getcwd()
+        import sys
+        cd_into_cwd_dir(sys.argv[0])
+        if os.path.exists("zabbix_check") is not True:
+            mk_dir_if_not_exist("zabbix_check")
+        if os.path.isdir("zabbix_check") is not True:
+            get_shell_cmd_output("mv zabbix_check zabbix_check_bak")
+            mk_dir_if_not_exist("zabbix_check")
+        the_full_path = "%s%s%s%s%s" % (os.getcwd(),os.sep,"zabbix_check",os.sep,str(file_name).strip())
+        os.chdir(ori_path)
+        return the_full_path
+    except:
+        traceback_to_file(the_log)
+
+def get_cpu_time():
+    the_dic = {}
+    cmd_line = """egrep -w "^cpu" /proc/stat |sed 's/cpu//'|column -t"""
+    all_cpu_time   = [ int(k) for k in get_shell_cmd_output(cmd_line)[0].split()]
+    the_dic["cpu_user"] = all_cpu_time[0]
+    the_dic["cpu_nice"] = all_cpu_time[1]
+    the_dic["cpu_sys"] = all_cpu_time[2]
+    the_dic["cpu_idle"] = all_cpu_time[3]
+    the_dic["cpu_iowait"] = all_cpu_time[4]
+    the_dic["cpu_irq"] = all_cpu_time[5]
+    the_dic["cpu_softirq"] = all_cpu_time[6]
+    the_dic["cpu_steal"] = all_cpu_time[7]
+    the_dic["cpu_guest"] = all_cpu_time[8]
+    the_dic["cpu_guest_nice"] = all_cpu_time[9]
+    return the_dic
+
+def cal_cpu_percent(old_dic,new_dic):
+    hell = {}
+    sum = 0
+    for k,v in new_dic.items():
+        hell[k] = int(v) - int(old_dic[k])
+    for i in hell:
+        sum += int(hell[i])
+    percent_1 = float("%0.5f" % (float(hell["cpu_user"] + hell["cpu_sys"] + hell["cpu_iowait"] + hell["cpu_nice"]) / sum ))
+    percent_2 = float("%0.5f" % (float(sum - hell["cpu_idle"] - hell["cpu_iowait"]) / sum ))
+    percent_3 = float("%0.5f" % (float(hell["cpu_user"] + hell["cpu_sys"] ) / float(hell["cpu_user"] + hell["cpu_sys"] + hell["cpu_idle"])))
+    return (percent_1,percent_2,percent_3)
+
 #################################################################################
 
 if __name__ == '__main__':
