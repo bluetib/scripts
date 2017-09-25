@@ -64,7 +64,6 @@ def print_help():
   -d                    Decrypt
   -e                    Encrypt
 
-  --dir_as_one_file     will make a zip from the given dir and encrypt the whole zip file
 ''' % sys.argv[0])
     sys.exit()
 
@@ -146,6 +145,39 @@ def find_library(possible_lib_names, search_symbol, library_name):
             pass
     return None
 
+def run_shell_command_3(command_string):
+    from subprocess import Popen,PIPE
+    cmd = "%s" % command_string.strip()
+    p = Popen(cmd,shell=True,stdout=PIPE,stderr=PIPE)
+    out,err = p.communicate()
+    if p.returncode == 0:
+        ret_out = []
+        for t in out.rstrip().splitlines():
+            if str(t).strip() != "":
+                ret_out.append(str(t).strip())
+        ret_err = []
+        for t in err.rstrip().splitlines():
+            if str(t).strip() != "":
+                ret_err.append(str(t).strip())
+        return ("ok",ret_out,ret_err)
+    else:
+        ret_out = []
+        for t in out.rstrip().splitlines():
+            if str(t).strip() != "":
+                ret_out.append(str(t).strip())
+        ret_err = []
+        for t in err.rstrip().splitlines():
+            if str(t).strip() != "":
+                ret_err.append(str(t).strip())
+        return ("problem",ret_out,ret_err)
+
+def get_shell_cmd_output(shell_cmd_str):
+    ret = run_shell_command_3(shell_cmd_str)
+    if ret[0] == "ok":
+        return ret[1]
+    else:
+        return "failed"
+
 def encrypt_or_decrypt(cipher_obj,deal_file,e1_or_d0,force_update="yes"):
     global data_size_in_e_or_d
     opend_f = open("%s" % deal_file,'rb')
@@ -189,15 +221,9 @@ def get_the_zip_path_for_dir(source_dir_path):
     zipf = zipfile.ZipFile("%s" % dest_zip_file_path,"w")
     for root, dirs, files in os.walk(os.path.split(source_dir_path)[1]):
         for file in files:
-#             print(os.path.join(root,file))
-#             time.sleep(1)
             zipf.write(os.path.join(root,file))
-#             print("root:%s file:%s" % (root,file))
-#             print(os.path.join(root.replace(r"%s" % source_dir_path,""),file))
-#             print(r"%s" % source_dir_path)
     os.chdir(cwd_path)
     return dest_zip_file_path
-
 
 def load_openssl():
     global loaded, libcrypto, buf
@@ -302,10 +328,9 @@ def get_config():
     if os.path.isfile(the_deal_path) != True and os.path.isdir(the_deal_path) != True:
         print("Sorry.. You must give me a path to a file or dir! EXIT now")
         sys.exit()
-
-    if len(sys.argv) == 4 and str(sys.argv[3]) == "--dir_as_one_file":
-        dir_as_one_file = True
-
+    else:
+        if os.path.isdir(the_deal_path) is True:
+            dir_as_one_file = True
 
 def load_libsodium():
     global loaded, libsodium, buf
@@ -514,6 +539,10 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
                 encrypt_or_decrypt(cipher_obj,"%s" % i,1,force_update="no")
                 self.response_dic['%s' % self.id]['before'] = "%s" % i
                 self.response_dic['%s' % self.id]['after'] = "%s.locked" % i
+                if self.response_dic['%s' % self.id]['before'].endswith(".zip"):
+                    os.remove(self.response_dic['%s' % self.id]['before'])
+                if self.response_dic['%s' % self.id]['before'].endswith(".tar.gz"):
+                    os.remove(self.response_dic['%s' % self.id]['before'])
             elif self.choice == "decrypt":
                 encrypt_or_decrypt(cipher_obj,"%s" % i,0,force_update="no")
                 self.response_dic['%s' % self.id]['before'] = "%s" % i
@@ -521,10 +550,29 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
                 if self.response_dic['%s' % self.id]['after'].endswith(".zip"):
                     kb = zipfile.ZipFile(self.response_dic['%s' % self.id]['after'])
                     kb.extractall(os.path.split(self.response_dic['%s' % self.id]['after'])[0])
+                    os.remove(self.response_dic['%s' % self.id]['after'])
+                if self.response_dic['%s' % self.id]['after'].endswith(".tar.gz"):
+                    tar_x_cmd_string = '''tar xvf %s -C /''' % self.response_dic['%s' % self.id]['after']
+                    get_shell_cmd_output(tar_x_cmd_string)
+                    os.remove(self.response_dic['%s' % self.id]['after'])
         end_time = time.time()
         self.response_dic['%s' % self.id]['time_used'] = int(end_time) - int(begin_time)
         self.queue.task_done()
 
+def get_tar_path(the_dir_path):
+    if os.path.exists(the_dir_path) is not True or os.path.isdir(the_dir_path) is not True:
+        print("not exists [%s]" % the_dir_path)
+        sys.exit()
+    else:
+        cmd_string = '''tar zcvf %s.tar.gz %s >/dev/null 2>&1''' % (the_dir_path,the_dir_path)
+        kk = get_shell_cmd_output(cmd_string)
+        if kk != "failed":
+            if os.path.exists("%s.tar.gz" % the_dir_path) is True:
+                return "%s.tar.gz" % the_dir_path
+            else:
+                return ""
+        else:
+            return ""
 
 class do_encrypt_or_decrypt_win(threading.Thread):
 
@@ -576,6 +624,8 @@ class do_encrypt_or_decrypt_win(threading.Thread):
                 encrypt_or_decrypt(cipher_obj,"%s" % i,1,force_update="no")
                 self.response_dic['%s' % self.id]['before'] = "%s" % i.decode("GB2312").encode("utf-8")
                 self.response_dic['%s' % self.id]['after'] = "%s.locked" % i.decode("GB2312").encode("utf-8")
+                if self.response_dic['%s' % self.id]['before'].endswith(".zip"):
+                    os.remove(self.response_dic['%s' % self.id]['before'])
             elif self.choice == "decrypt":
                 encrypt_or_decrypt(cipher_obj,"%s" % i,0,force_update="no")
                 self.response_dic['%s' % self.id]['before'] = "%s" % i.decode("GB2312").encode("utf-8")
@@ -583,6 +633,7 @@ class do_encrypt_or_decrypt_win(threading.Thread):
                 if self.response_dic['%s' % self.id]['after'].endswith(".zip"):
                     kb = zipfile.ZipFile(self.response_dic['%s' % self.id]['after'])
                     kb.extractall(os.path.split(self.response_dic['%s' % self.id]['after'])[0])
+                    os.remove(self.response_dic['%s' % self.id]['after'])
         end_time = time.time()
         self.response_dic['%s' % self.id]['time_used'] = int(end_time) - int(begin_time)
         self.queue.task_done()
@@ -681,7 +732,12 @@ if __name__ == '__main__':
     result_dic['method'] = method
     try:
         if dir_as_one_file:
-            the_deal_path = get_the_zip_path_for_dir(the_deal_path)
+            if os.name == 'posix':
+                the_deal_path = get_tar_path(the_deal_path)
+                if the_deal_path == "":
+                    the_deal_path = get_the_zip_path_for_dir(the_deal_path)
+            elif os.name == 'nt':
+                the_deal_path = get_the_zip_path_for_dir(the_deal_path)
         if method in ["salsa20","chacha20"] and not loaded:
             load_libsodium()
         elif method not in ['table'] and not loaded:
@@ -743,3 +799,4 @@ if __name__ == '__main__':
     except Exception as e:
         print("ERROR INFO: %s" % str(e))
         sys.exit()
+
