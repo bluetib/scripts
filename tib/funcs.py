@@ -945,6 +945,7 @@ def get_all_disk_of_this_machine():
         return ""
 
 def human(num, power="Ki"):
+    num = int(num)
     powers = ["Ki", "Mi", "Gi", "Ti"]
     while num >= 1000: #4 digits
         num /= 1024.0
@@ -1536,6 +1537,34 @@ def get_zabbix_check_file_path(file_name,the_log):
     except:
         traceback_to_file(the_log)
 
+def get_cpu_time():
+    the_dic = {}
+    cmd_line = """egrep -w "^cpu" /proc/stat |sed 's/cpu//'|column -t"""
+    all_cpu_time   = [ int(k) for k in get_shell_cmd_output(cmd_line)[0].split()]
+    the_dic["cpu_user"] = all_cpu_time[0]
+    the_dic["cpu_nice"] = all_cpu_time[1]
+    the_dic["cpu_sys"] = all_cpu_time[2]
+    the_dic["cpu_idle"] = all_cpu_time[3]
+    the_dic["cpu_iowait"] = all_cpu_time[4]
+    the_dic["cpu_irq"] = all_cpu_time[5]
+    the_dic["cpu_softirq"] = all_cpu_time[6]
+    the_dic["cpu_steal"] = all_cpu_time[7]
+    the_dic["cpu_guest"] = all_cpu_time[8]
+    the_dic["cpu_guest_nice"] = all_cpu_time[9]
+    return the_dic
+
+def cal_cpu_percent(old_dic,new_dic):
+    hell = {}
+    sum = 0
+    for k,v in new_dic.items():
+        hell[k] = int(v) - int(old_dic[k])
+    for i in hell:
+        sum += int(hell[i])
+    percent_1 = float("%0.5f" % (float(hell["cpu_user"] + hell["cpu_sys"] + hell["cpu_iowait"] + hell["cpu_nice"]) / sum ))
+    percent_2 = float("%0.5f" % (float(sum - hell["cpu_idle"] - hell["cpu_iowait"]) / sum ))
+    percent_3 = float("%0.5f" % (float(hell["cpu_user"] + hell["cpu_sys"] ) / float(hell["cpu_user"] + hell["cpu_sys"] + hell["cpu_idle"])))
+    return (percent_1,percent_2,percent_3)
+
 #################################################################################
 
 if __name__ == '__main__':
@@ -1566,4 +1595,5 @@ if __name__ == '__main__':
     color_print("Hello",color="green")
     color_print("Hello",color="title")
     color_print("Hello",color="info")
+    print get_cpu_percent()
 
