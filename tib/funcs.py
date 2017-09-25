@@ -1595,5 +1595,4 @@ if __name__ == '__main__':
     color_print("Hello",color="green")
     color_print("Hello",color="title")
     color_print("Hello",color="info")
-    print get_cpu_percent()
 
