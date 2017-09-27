@@ -16,6 +16,7 @@ import threading
 import Queue
 import time
 import zipfile
+import traceback
 # from cryptography.hazmat.primitives.ciphers.base import Cipher
 # import openssl
 # import socket
@@ -59,10 +60,12 @@ else:
 
 
 def print_help():
-    print('''Usage:\n\n %s [OPTION] "The file or dir path"  [--dir_as_one_file]
+    print('''Usage:\n\n %s [OPTION] "The file or dir"
 
-  -d                    Decrypt
-  -e                    Encrypt
+OPTION:
+
+  -d  Decrypt
+  -e  Encrypt
 
 ''' % sys.argv[0])
     sys.exit()
@@ -797,8 +800,11 @@ if __name__ == '__main__':
                 my_queue.put(the_deal_path)
             my_queue.join()
         print_json(result_dic)
-        open("%s%sEncrypt_or_Decrypt_my_data.log" % (os.path.split(os.path.abspath(__file__))[0],os.sep),'a+').write("%s\n-------------------------%s-----------------------\n\n" % (json.dumps(result_dic,indent=4,ensure_ascii=False,sort_keys=True),time.strftime("%Y-%m-%d %H:%M:%S")))
+        open("%s%sencrypt_or_decrypt.log" % (os.path.split(os.path.abspath(__file__))[0],os.sep),'a+').write("%s\n-------------------------%s-----------------------\n\n" % (json.dumps(result_dic,indent=4,ensure_ascii=False,sort_keys=True),time.strftime("%Y-%m-%d %H:%M:%S")))
     except Exception as e:
         print("ERROR INFO: %s" % str(e))
         sys.exit()
+    except:
+        for i in str(traceback.format_exc()).splitlines():
+            print(i)
 
