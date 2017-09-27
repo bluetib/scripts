@@ -556,7 +556,7 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
                     kb.extractall(os.path.split(self.response_dic['%s' % self.id]['after'])[0])
                     os.remove(self.response_dic['%s' % self.id]['after'])
                 if self.response_dic['%s' % self.id]['after'].endswith(".tar.gz"):
-                    tar_x_cmd_string = '''tar xvf %s -C /''' % self.response_dic['%s' % self.id]['after']
+                    tar_x_cmd_string = '''cd %s && tar xvf %s ''' % (os.path.split(self.response_dic['%s' % self.id]['after'])[0],self.response_dic['%s' % self.id]['after'])
                     get_shell_cmd_output(tar_x_cmd_string)
                     os.remove(self.response_dic['%s' % self.id]['after'])
         end_time = time.time()
@@ -565,10 +565,12 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
 
 def get_tar_path(the_dir_path):
     if os.path.exists(the_dir_path) is not True or os.path.isdir(the_dir_path) is not True:
-        print("not exists [%s]" % the_dir_path)
+        print("[%s] not exists or not dir" % the_dir_path)
         sys.exit()
     else:
-        cmd_string = '''tar zcvf %s.tar.gz %s >/dev/null 2>&1''' % (the_dir_path,the_dir_path)
+        tar_path = os.path.split(the_dir_path)[0]
+        tar_file_name = os.path.split(the_dir_path)[1]
+        cmd_string = '''cd %s && tar zcvf %s.tar.gz %s >/dev/null 2>&1''' % (tar_path,tar_file_name,tar_file_name)
         kk = get_shell_cmd_output(cmd_string)
         if kk != "failed":
             if os.path.exists("%s.tar.gz" % the_dir_path) is True:
