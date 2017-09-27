@@ -16,6 +16,7 @@ import threading
 import Queue
 import time
 import zipfile
+import traceback
 # from cryptography.hazmat.primitives.ciphers.base import Cipher
 # import openssl
 # import socket
@@ -59,10 +60,12 @@ else:
 
 
 def print_help():
-    print('''Usage:\n\n %s [OPTION] "The file or dir path"  [--dir_as_one_file]
+    print('''Usage:\n\n %s [OPTION] "The file or dir"
 
-  -d                    Decrypt
-  -e                    Encrypt
+OPTION:
+
+  -d  Decrypt
+  -e  Encrypt
 
 ''' % sys.argv[0])
     sys.exit()
@@ -331,6 +334,7 @@ def get_config():
     else:
         if os.path.isdir(the_deal_path) is True:
             dir_as_one_file = True
+    return the_deal_path
 
 def load_libsodium():
     global loaded, libsodium, buf
@@ -701,7 +705,6 @@ def run_cipher(cipher, decipher):
     assert b''.join(results) == plain
 
 
-
 def test_salsa20():
     cipher = SodiumCrypto('salsa20', b'k' * 32, b'i' * 16, 1)
     decipher = SodiumCrypto('salsa20', b'k' * 32, b'i' * 16, 0)
@@ -726,7 +729,7 @@ if __name__ == '__main__':
         print("Sorry.. method [salsa20/chacha20] not supported on windows; eg: win7  Please change the method")
         sys.exit()
 
-    get_config()
+    the_deal_path_ori = get_config()
     my_queue = Queue.Queue()
     result_dic = {}
     result_dic['method'] = method
@@ -738,6 +741,8 @@ if __name__ == '__main__':
                     the_deal_path = get_the_zip_path_for_dir(the_deal_path)
             elif os.name == 'nt':
                 the_deal_path = get_the_zip_path_for_dir(the_deal_path)
+            if the_deal_path != "":
+                shutil.rmtree(the_deal_path_ori)
         if method in ["salsa20","chacha20"] and not loaded:
             load_libsodium()
         elif method not in ['table'] and not loaded:
@@ -795,8 +800,11 @@ if __name__ == '__main__':
                 my_queue.put(the_deal_path)
             my_queue.join()
         print_json(result_dic)
-        open("%s%sEncrypt_or_Decrypt_my_data.log" % (os.path.split(os.path.abspath(__file__))[0],os.sep),'a+').write("%s\n-------------------------%s-----------------------\n\n" % (json.dumps(result_dic,indent=4,ensure_ascii=False,sort_keys=True),time.strftime("%Y-%m-%d %H:%M:%S")))
+        open("%s%sencrypt_or_decrypt.log" % (os.path.split(os.path.abspath(__file__))[0],os.sep),'a+').write("%s\n-------------------------%s-----------------------\n\n" % (json.dumps(result_dic,indent=4,ensure_ascii=False,sort_keys=True),time.strftime("%Y-%m-%d %H:%M:%S")))
     except Exception as e:
         print("ERROR INFO: %s" % str(e))
         sys.exit()
+    except:
+        for i in str(traceback.format_exc()).splitlines():
+            print(i)
 
