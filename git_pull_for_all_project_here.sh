@@ -52,7 +52,7 @@ function get_remote_info_by_branch_name()
     local branch_name="$1"
     remote_name=$(git branch -a -vv|egrep -v "remotes"|sed 's|\*||g'|column -t|egrep "^${branch_name}"|egrep -w "${branch_name}"|awk '{print $3}'|sed 's|\[||g'|sed 's|\]||g'|awk -F'/' '{print $1}')
     echo -e "+++++"
-    git remote -v|egrep "^${remote_name}"
+    git remote -v|egrep "^${remote_name}"|column -t
     echo -e "+++++"
 }
 

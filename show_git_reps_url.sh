@@ -37,7 +37,7 @@ if [ -f "rep_list" ];then
             continue
         fi
         echo -e "========================================== $rep =============================================\n"
-        git remote -v
+        git remote -v|column -t
         #for i in $branchs
         #do
         #   if [ $(check_branch_exist $i) = "yes" ];then
@@ -72,7 +72,7 @@ do
         continue
     fi
     echo -e "======================================= $i =========================================\n"
-    git remote -v
+    git remote -v|colu -t
     #if [ "$branch_name" != "" ];then
     #   N=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep ${branch_name}|wc -l)
     #   if [ $N -eq 1 ];then
