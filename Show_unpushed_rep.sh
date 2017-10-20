@@ -3,8 +3,8 @@
 now_path=`cd $(dirname $0) && pwd`
 cd $now_path
 
-if [ -f "/usr/local/bin/funcs.sh" ];then
-    . /usr/local/bin/funcs.sh
+if [ -f "/usr/local/bin/color.sh" ];then
+    . /usr/local/bin/color.sh
     color="yes"
 else
     color="no"
@@ -15,6 +15,15 @@ if [ $# -eq 1 ];then
 else
     branch_name=""
 fi
+
+function color_echo_red()
+{
+    if [ "$color" == "yes" ];then
+        clr_red "$*"
+    else
+        echo -e "$*"
+    fi
+}
 
 function check_branch_exist()
 {
@@ -44,27 +53,29 @@ function get_remote_info_by_branch_name()
     N1=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|wc -l)
     if [ $N1 -gt 1 ];then
         echo -e "+++++"
-        git remote -v
+        git remote -v|column -t
         echo -e "+++++"
         return 1
     fi
     remote=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|awk -F'/' '{print $2}')
     echo -e "+++++"
-    git remote -v|egrep "^${remote}"
+    git remote -v|egrep "^${remote}"|column -t
     echo -e "+++++"
 }
+
 function check_if_ahead()
 {
     local branch_name="$1"
     ahead_num=$(git status|egrep "is ahead of"|egrep -w -o "[0-9]+"|wc -l)
     if [ $ahead_num -ge 1 ];then
         if [ $color == "yes" ];then
-            clr_red "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
+            color_echo_red "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
         else
             echo -e "=== |||||||||||||| =========== Please check [Need To Push] ahead of $ahead_num commits ============|||||||||||||| ==="
         fi
     fi
 }
+
 
 if [ -f "rep_list" ];then
     echo -e "--- OK. I will just use the rep_list file to pull from remote ---"
@@ -76,7 +87,7 @@ if [ -f "rep_list" ];then
         last_checkout_to_branch=$(echo $line|awk -F' ' '{print $3}')
         if [ ! -d "$rep" ];then
             if [ $color == "yes" ];then
-                clr_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
+                color_echo_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
             else
                 echo -e " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
             fi
@@ -86,7 +97,7 @@ if [ -f "rep_list" ];then
         if [ ! -d ".git" ];then
             cd ..
             if [ $color == "yes" ];then
-                clr_red " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
+                color_echo_red " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
             else
                 echo -e " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
             fi
@@ -103,12 +114,14 @@ if [ -f "rep_list" ];then
                 git status
                 echo -e "------------------"
             else
-                echo -e "Continue cause branch [$i] not exist"
+                color_echo_red "Continue cause branch [$i] not exist"
                 continue
             fi
         done
         if [ "$no_branch_match" == "yes" ];then
             default_branch=$(get_default_branch_if_need)
+            color_echo_red "\n  --- no branch match found. [$branchs] sleep 5 seconds ---\n"
+            sleep 5
         fi
         if [ "$default_branch" != "no" ];then
             git checkout $default_branch

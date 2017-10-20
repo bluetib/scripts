@@ -12,7 +12,7 @@ do
 		continue
 	fi
 	echo -e "======================================= $i ========================================="
-	echo -e "I am git pulling all branch from all remote.. Please just wait for a while.. "
+	echo -e "I am git pulling all branch.. Please just wait for a while.. "
 	sleep 1
 	git pull --all
 	echo -e "===================================== Pull used time seconds: [$time_used] ===========================================\n"
