@@ -545,7 +545,7 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
                 self.response_dic['%s' % self.id]['after'] = "%s.locked" % i
                 if self.response_dic['%s' % self.id]['before'].endswith(".zip"):
                     os.remove(self.response_dic['%s' % self.id]['before'])
-                if self.response_dic['%s' % self.id]['before'].endswith(".tar.gz"):
+                if self.response_dic['%s' % self.id]['before'].endswith(".tar.bz2"):
                     os.remove(self.response_dic['%s' % self.id]['before'])
             elif self.choice == "decrypt":
                 encrypt_or_decrypt(cipher_obj,"%s" % i,0,force_update="no")
@@ -555,7 +555,7 @@ class do_encrypt_or_decrypt_linux(threading.Thread):
                     kb = zipfile.ZipFile(self.response_dic['%s' % self.id]['after'])
                     kb.extractall(os.path.split(self.response_dic['%s' % self.id]['after'])[0])
                     os.remove(self.response_dic['%s' % self.id]['after'])
-                if self.response_dic['%s' % self.id]['after'].endswith(".tar.gz"):
+                if self.response_dic['%s' % self.id]['after'].endswith(".tar.bz2"):
                     tar_x_cmd_string = '''cd %s && tar xvf %s ''' % (os.path.split(self.response_dic['%s' % self.id]['after'])[0],self.response_dic['%s' % self.id]['after'])
                     get_shell_cmd_output(tar_x_cmd_string)
                     os.remove(self.response_dic['%s' % self.id]['after'])
@@ -570,11 +570,11 @@ def get_tar_path(the_dir_path):
     else:
         tar_path = os.path.split(the_dir_path)[0]
         tar_file_name = os.path.split(the_dir_path)[1]
-        cmd_string = '''cd %s && tar zcvf %s.tar.gz %s >/dev/null 2>&1''' % (tar_path,tar_file_name,tar_file_name)
+        cmd_string = '''cd %s && tar jcvf %s.tar.bz2 %s >/dev/null 2>&1''' % (tar_path,tar_file_name,tar_file_name)
         kk = get_shell_cmd_output(cmd_string)
         if kk != "failed":
-            if os.path.exists("%s.tar.gz" % the_dir_path) is True:
-                return "%s.tar.gz" % the_dir_path
+            if os.path.exists("%s.tar.bz2" % the_dir_path) is True:
+                return "%s.tar.bz2" % the_dir_path
             else:
                 return ""
         else:
