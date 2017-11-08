@@ -58,48 +58,57 @@ py_file_num=$(cat $t_file_1|wc -l)
 sh_file_num=$(cat $t_file_4|wc -l)
 show_info_2 "This time I got $py_file_num python files"
 show_info_2 "This time I got $sh_file_num shell files"
-show_info 1 "calculate every file"
-sum_py=0
-for i in `cat $t_file_1`
-do
-    N=$(cat $i|wc -l)
-    sum_py=$((sum_py+N))
-    echo -e "$N $i" >> $t_file_2
-done
-sum_sh=0
-for i in `cat $t_file_4`
-do
-    N=$(cat $i|wc -l)
-    sum_sh=$((sum_sh+N))
-    echo -e "$N $i" >> $t_file_3
-done
-
-if [ $sh_file_num -ge 10000 ];then
-    echo -e "So many files.. You sure want to check this ?"
-    read -p "[yes/no/y/n]: " choice
-    if [ "$choice" == "yes" -o "$choice" == "y" -o "$choice" == "" -o "$choice" == "Y" ];then
-        show_info 2 "show every shell file info"
-        cat $t_file_3|sort -n -k1
+if [ $py_file_num -ne 0 ];then
+    show_info 1 "calculate every python file"
+    sum_py=0
+    while read line
+    do
+        N=$(cat "$line"|wc -l)
+        sum_py=$((sum_py+N))
+        echo -e "$N $line" >> $t_file_2
+    done < $t_file_1
+    if [ $py_file_num -ge 10000 ];then
+        echo -e "So many files.. You sure want to check this ?"
+        read -p "[yes/no/y/n]: " choice
+        if [ "$choice" == "yes" -o "$choice" == "y" -o "$choice" == "" -o "$choice" == "Y" ];then
+            show_info 2 "show every python file info"
+            cat $t_file_2|sort -n -k1|egrep -v ^0
+        else
+            echo -e "OK.No show this time..If you want to see please run script again."
+        fi
     else
-        echo -e "OK.No show this time..If you want to see please run script again."
-    fi
-else
-    show_info 2 "show every shell file info"
-    cat $t_file_3|sort -n -k1
-fi
-if [ $py_file_num -ge 10000 ];then
-    echo -e "So many files.. You sure want to check this ?"
-    read -p "[yes/no/y/n]: " choice
-    if [ "$choice" == "yes" -o "$choice" == "y" -o "$choice" == "" -o "$choice" == "Y" ];then
         show_info 2 "show every python file info"
-        cat $t_file_2|sort -n -k1
-    else
-        echo -e "OK.No show this time..If you want to see please run script again."
+        cat $t_file_2|sort -n -k1|egrep -v ^0
     fi
 else
-    show_info 2 "show every python file info"
-    cat $t_file_2|sort -n -k1
+    sum_py=0
 fi
+if [ $sh_file_num -ne 0 ];then
+    show_info 1 "calculate every shell file"
+    sum_sh=0
+    while read line
+    do
+        N=$(cat "$line"|wc -l)
+        sum_sh=$((sum_sh+N))
+        echo -e "$N $line" >> $t_file_3
+    done < $t_file_4
+    if [ $sh_file_num -ge 10000 ];then
+        echo -e "So many files.. You sure want to check this ?"
+        read -p "[yes/no/y/n]: " choice
+        if [ "$choice" == "yes" -o "$choice" == "y" -o "$choice" == "" -o "$choice" == "Y" ];then
+            show_info 2 "show every shell file info"
+            cat $t_file_3|sort -n -k1|egrep -v ^0
+        else
+            echo -e "OK.No show this time..If you want to see please run script again."
+        fi
+    else
+        show_info 2 "show every shell file info"
+        cat $t_file_3|sort -n -k1|egrep -v ^0
+    fi
+else
+    sum_sh=0
+fi
+
 show_info_2 "All python code lines is [$sum_py]"
 show_info_2 "All shell code lines is [$sum_sh]"
 
