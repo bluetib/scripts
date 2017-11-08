@@ -9,6 +9,6 @@ else
     PORT="$2"
 fi
 
-export http_proxy="http://${IP}:${PORT}"
-export https_proxy="http://${IP}:${PORT}"
+export http_proxy="http://tib:gansiduiyo@${IP}:${PORT}"
+export https_proxy="http://tib:gansiduiyo@${IP}:${PORT}"
 
