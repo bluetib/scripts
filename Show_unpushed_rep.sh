@@ -53,13 +53,13 @@ function get_remote_info_by_branch_name()
     N1=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|wc -l)
     if [ $N1 -gt 1 ];then
         echo -e "+++++"
-        git remote -v
+        git remote -v|column -t
         echo -e "+++++"
         return 1
     fi
     remote=$(git branch -a|egrep "$branch_name" -w|egrep remotes|egrep -v HEAD|awk -F'/' '{print $2}')
     echo -e "+++++"
-    git remote -v|egrep "^${remote}"
+    git remote -v|egrep "^${remote}"|column -t
     echo -e "+++++"
 }
 

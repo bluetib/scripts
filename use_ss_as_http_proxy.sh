@@ -4,8 +4,11 @@ if [ $# -ne 2 ];then
     echo -e "Usage:\n\t$0 IP PORT"
     echo -e "\nimportant: [here should be http_proxy polipo]"
     exit 1
+else
+    IP="$1"
+    PORT="$2"
 fi
 
-export http_proxy="http://${IP}:${PORT}"
-export https_proxy="http://${IP}:${PORT}"
+export http_proxy="http://tib:gansiduiyo@${IP}:${PORT}"
+export https_proxy="http://tib:gansiduiyo@${IP}:${PORT}"
 
