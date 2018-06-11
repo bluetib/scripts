@@ -70,7 +70,7 @@ if [ -f "rep_list" ];then
             if [ $color == "yes" ];then
                 color_echo_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
             else
-                echo -e " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
+                color_echo_red " === |||||||||||||| =========== Sorry [$rep] not found ============ |||||||||||||| === "
             fi
             continue
         fi
@@ -79,7 +79,7 @@ if [ -f "rep_list" ];then
             if [ $color == "yes" ];then
                 color_echo_red " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
             else
-                echo -e " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
+                color_echo_red " === |||||||||||||| =========== Sorry [$rep] is not right git rep ============ |||||||||||||| === "
             fi
             continue
         fi
@@ -142,7 +142,7 @@ do
     if [ "$branch_name" != "" ];then
         N=$(git branch -a|egrep -v remote|sed 's/*//'|column -t|egrep -w ${branch_name}|wc -l)
         if [ $N -eq 1 ];then
-            echo -e "=== checkout to $branch_name to update this branch $branch_name ==="
+            color_echo_red "=== checkout to $branch_name to update this branch $branch_name ==="
             git checkout $branch_name
             git br -a
         else
@@ -150,7 +150,7 @@ do
             if [ $N1 -eq 1 ];then
                 git checkout -b ${branch_name} origin/${branch_name}
             else
-                echo -e "Sorry. no remote branch name match your request [$branch_name]"
+                color_echo_red "Sorry. no remote branch name match your request [$branch_name]"
                 cd ..
                 continue
             fi
@@ -158,10 +158,10 @@ do
     fi
     if [ "$branch_name" == "" ];then
         default_branch=$(get_default_branch_if_need)
-        echo -e "--- git pulling for branch default_branch [$default_branch] ---"
+        color_echo_red "--- git pulling for branch default_branch [$default_branch] ---"
         get_remote_info_by_branch_name $default_branch
     else
-        echo -e "--- git pulling for branch the_branch [$branch_name] ---"
+        color_echo_red "--- git pulling for branch the_branch [$branch_name] ---"
         get_remote_info_by_branch_name $branch_name
     fi
     git pull 2>/dev/null
