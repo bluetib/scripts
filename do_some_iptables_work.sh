@@ -31,7 +31,7 @@ if [ "$choice" == "start" ];then
             exit 1
         else
             echo -e "#clear new added iptables rule every 5 minutes" >> /etc/crontab
-            echo -e "*/2 * * * * root iptables-restore < /etc/iptables_work/iptables.save" >> /etc/crontab
+            echo -e "*/5 * * * * root iptables-restore < /etc/iptables_work/iptables.save" >> /etc/crontab
             echo -e "Added crontab for clear new added iptables rules every 5 minutes"
         fi
     fi
